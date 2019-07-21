@@ -30,5 +30,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
-[MIT License](LICENSE.md)
 This project is licensed under the [MIT License](LICENSE.md) - see the [LICENSE.md](LICENSE.md) file for details.
