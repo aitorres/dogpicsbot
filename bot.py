@@ -76,7 +76,7 @@ class DogPicsBot:
 
         HELP_MSG = "Woof woof! " + \
                    "If you want a dog picture, send me a message " + \
-                   "use the \\dog command."
+                   "or use the /dog command."
         context.bot.send_message(chat_id=update.message.chat_id, text=HELP_MSG)
 
     def echo_direct_messages(self, update, context):
