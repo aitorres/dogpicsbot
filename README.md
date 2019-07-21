@@ -24,6 +24,14 @@ Run the following command on a command line. It will keep the polling thread run
 python bot.py
 ```
 
+## What's next?
+
+The next features to be developed are:
+
+- Replying to 'woof', 'bark', 'dog' and other dog-related words in a chat or group with a dog pic, instead of automatically replying to every message.
+- Fetching dog pictures of a given dog breed on demand.
+- And more!
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
