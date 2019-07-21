@@ -1,4 +1,4 @@
-"""Simple Telegram bot that sends random dog pictures.
+"""A simple Telegram bot that sends random dog pictures.
 
 This code declares a Telegram bot that will reply every message with
 a random dog picture.
