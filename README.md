@@ -20,6 +20,8 @@ pip install requirements.txt
 
 Simply clone this repository, fetch the requirements on a virtual environment as stated above and then set a new environment variable named `DPB_TG_TOKEN` with your Telegram bot API token. If you don't have a valid token, [check this out](https://core.telegram.org/bots).
 
+Note that one feature (sending dog pictures freely through group chats on certain trigger words) requires the bot's Privacy Mode to be disabled (this can be done through @BotFather).
+
 ## Usage
 
 Run the following command on a command line. It will keep the polling thread running (therefore keeping your bot alive) until you kill the process.
@@ -32,8 +34,9 @@ python bot.py
 
 The next features to be developed are:
 
-- Replying to 'woof', 'bark', 'dog' and other dog-related words in a chat or group with a dog pic, instead of automatically replying to every message.
 - Fetching dog pictures of a given dog breed on demand.
+- Replying "intelligently" to messages relating to dogs (breeds, emotions)
+- Replying to sad messages with dog pictures :(
 - And more!
 
 ## Contributing
