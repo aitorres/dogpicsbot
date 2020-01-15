@@ -87,7 +87,7 @@ class DogPicsBot:
 
         TRIGGER_MESSAGES = ["woof", "bark", "puppy", "dog", "perro", "perrito", "doggy"]
 
-        shouldTriggerPicture = any([x in lower(update.message.chat.text) for x in TRIGGER_MESSAGES])
+        shouldTriggerPicture = any([x in update.message.chat.text.lower() for x in TRIGGER_MESSAGES])
 
         if shouldTriggerPicture or update.message.chat.type != 'group':
             self.send_dog_picture(update, context)
