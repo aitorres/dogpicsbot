@@ -89,10 +89,8 @@ class DogPicsBot:
 
         shouldTriggerPicture = any([x in lower(update.message.chat.text) for x in TRIGGER_MESSAGES])
 
-        if update.message.chat.type == 'group' and not shouldTriggerPicture:
-            return
-
-        self.send_dog_picture(update, context)
+        if shouldTriggerPicture or update.message.chat.type != 'group':
+            self.send_dog_picture(update, context)
 
     def send_dog_picture(self, update, context):
         """
