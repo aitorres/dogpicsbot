@@ -111,8 +111,20 @@ class DogPicsBot:
         hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
         hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in DOG_EMOJIS])
 
+        logging.debug("STICKER CONDITIONS ARE: {0} - {1} - {2}".format(
+            hasSticker,
+            hasEmojiSticker,
+            hasDogSticker
+        ))
+
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
+
+        logging.debug("CONDITIONS ARE: {0} - {1} - {2}".format(
+            shouldTriggerPicture,
+            hasDogSticker,
+            isPersonalChat
+        ))
 
         if any([shouldTriggerPicture, hasDogSticker, isPersonalChat]):
             self.send_dog_picture(update, context)
