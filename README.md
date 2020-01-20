@@ -4,7 +4,7 @@ A simple Telegram bot that sends random dog pictures.
 
 You can test the bot on Telegram, just click here: [@DogPicsBot](https://t.me/dogpicsbot).
 
-Currently on [v1.1.0](https://github.com/aitorres/dogpicsbot/releases/tag/v1.0.2). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
+Currently on [v1.2.0](https://github.com/aitorres/dogpicsbot/releases/tag/v1.2.0). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
 
 ## Requirements
 
@@ -30,7 +30,7 @@ Run the following command on a command line. It will keep the polling thread run
 python bot.py
 ```
 
-## What's next?
+## What's next
 
 The next features to be developed are:
 
