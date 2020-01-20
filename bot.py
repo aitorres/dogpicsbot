@@ -118,8 +118,8 @@ class DogPicsBot:
         ))
 
         logging.debug(update.message)
+        logging.debug(type(update.message))
         logging.debug(update.message.sticker)
-        logging.debug(update.message.sticker.emoji)
 
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
