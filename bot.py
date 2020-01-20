@@ -117,6 +117,9 @@ class DogPicsBot:
             hasDogSticker
         ))
 
+        logging.debug(update.message.sticker)
+        logging.debug(update.message.sticker.emoji)
+
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
 
