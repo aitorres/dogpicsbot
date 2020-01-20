@@ -109,7 +109,7 @@ class DogPicsBot:
         # Possibility: the received message is a dog-related sticker
         hasSticker = update.message.sticker is not None
         hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
-        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in DOG_STICKERS])
+        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in DOG_EMOJIS])
 
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
