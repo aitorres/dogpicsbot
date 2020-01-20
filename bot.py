@@ -30,6 +30,12 @@ class DogPicsBot:
         # This environment variable should be set before using the bot
         self.token = os.environ.get('DPB_TG_TOKEN')
         self.api_url = 'https://dog.ceo/api/breeds/image/random'
+        self.dog_emojis = [
+            "🐶",
+            "🐕",
+            "🐩",
+            "🌭",
+        ]
 
         # Stops runtime if the token has not been set
         if self.token is None:
@@ -61,10 +67,16 @@ class DogPicsBot:
         dog_handler = CommandHandler('dog', self.send_dog_picture)
         self.dispatcher.add_handler(dog_handler)
 
-        # Declares and adds a handler that will reply with a dog pic, if
-        # the message received does not come from a group
-        echo_handler = MessageHandler(Filters.text, self.echo_direct_messages)
-        self.dispatcher.add_handler(echo_handler)
+        # Declares and adds a handler for text messages that will reply with
+        # a dog pic if either the message comes from a personal chat
+        # or includes a trigger word
+        text_handler = MessageHandler(Filters.text, self.handle_text_messages)
+        self.dispatcher.add_handler(text_handler)
+
+        # Declares and adds a handler for stickers that will reply with
+        # a dog pic if the sticker is dog-related
+        sticker_handler = MessageHandler(Filters.sticker, self.handle_stickers)
+        self.dispatcher.add_handler(sticker_handler)
 
         # Fires up the polling thread. We're live!
         self.updater.start_polling()
@@ -79,18 +91,11 @@ class DogPicsBot:
                    "or use the /dog command."
         context.bot.send_message(chat_id=update.message.chat_id, text=HELP_MSG)
 
-    def echo_direct_messages(self, update, context):
+    def handle_text_messages(self, update, context):
         """
         Checks if a message comes from a group. If that is not the case,
-        replies with a dog picture.
+        or if the message includes a trigger word, replies with a dog picture.
         """
-
-        DOG_EMOJIS = [
-            "🐶",
-            "🐕",
-            "🐩",
-            "🌭",
-        ]
 
         # Possibility: the received message mentions dogs
         TRIGGER_MESSAGES = [
@@ -103,34 +108,26 @@ class DogPicsBot:
             "doggy",
             "lomito",
         ]
-        TRIGGER_MESSAGES += DOG_EMOJIS
+        TRIGGER_MESSAGES += self.dog_emojis
         shouldTriggerPicture = any([x in update.message.text.lower() for x in TRIGGER_MESSAGES])
-
-        # Possibility: the received message is a dog-related sticker
-        hasSticker = update.message.sticker is not None
-        hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
-        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in DOG_EMOJIS])
-
-        logging.debug("STICKER CONDITIONS ARE: {0} - {1} - {2}".format(
-            hasSticker,
-            hasEmojiSticker,
-            hasDogSticker
-        ))
-
-        logging.debug(update.message)
-        logging.debug(type(update.message))
-        logging.debug(update.message.sticker)
 
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
 
-        logging.debug("CONDITIONS ARE: {0} - {1} - {2}".format(
-            shouldTriggerPicture,
-            hasDogSticker,
-            isPersonalChat
-        ))
+        if any([shouldTriggerPicture, isPersonalChat]):
+            self.send_dog_picture(update, context)
 
-        if any([shouldTriggerPicture, hasDogSticker, isPersonalChat]):
+    def handle_stickers(self, update, context):
+        """
+        Checks if a given sticker is dog-related, and replies with a dog
+        picture if that's the case.
+        """
+
+        hasSticker = update.message.sticker is not None
+        hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
+        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in self.dog_emojis])
+
+        if hasDogSticker:
             self.send_dog_picture(update, context)
 
     def send_dog_picture(self, update, context):
