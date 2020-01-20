@@ -85,6 +85,14 @@ class DogPicsBot:
         replies with a dog picture.
         """
 
+        DOG_EMOJIS = [
+            "🐶",
+            "🐕",
+            "🐩",
+            "🌭",
+        ]
+
+        # Possibility: the received message mentions dogs
         TRIGGER_MESSAGES = [
             "woof",
             "bark",
@@ -94,12 +102,19 @@ class DogPicsBot:
             "perrito",
             "doggy",
             "lomito",
-            "🐶",
         ]
-
+        TRIGGER_MESSAGES += DOG_EMOJIS
         shouldTriggerPicture = any([x in update.message.text.lower() for x in TRIGGER_MESSAGES])
 
-        if shouldTriggerPicture or update.message.chat.type != 'group':
+        # Possibility: the received message is a dog-related sticker
+        hasSticker = update.message.sticker is not None
+        hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
+        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in DOG_STICKERS])
+
+        # Possibility: it's a personal chat message
+        isPersonalChat = update.message.chat.type != 'group'
+
+        if any([shouldTriggerPicture, hasDogSticker, isPersonalChat]):
             self.send_dog_picture(update, context)
 
     def send_dog_picture(self, update, context):
