@@ -117,6 +117,7 @@ class DogPicsBot:
             hasDogSticker
         ))
 
+        logging.debug(update.message)
         logging.debug(update.message.sticker)
         logging.debug(update.message.sticker.emoji)
 
