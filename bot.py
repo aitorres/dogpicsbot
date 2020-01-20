@@ -85,7 +85,17 @@ class DogPicsBot:
         replies with a dog picture.
         """
 
-        TRIGGER_MESSAGES = ["woof", "bark", "puppy", "dog", "perro", "perrito", "doggy"]
+        TRIGGER_MESSAGES = [
+            "woof",
+            "bark",
+            "puppy",
+            "dog",
+            "perro",
+            "perrito",
+            "doggy",
+            "lomito",
+            "🐶",
+        ]
 
         shouldTriggerPicture = any([x in update.message.text.lower() for x in TRIGGER_MESSAGES])
 
