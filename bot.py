@@ -50,7 +50,7 @@ class DogPicsBot:
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.DEBUG)
 
-    def fetch_breeds(selfs):
+    def fetch_breeds(self):
         """
         Fetches and stores in memory the list of searchable breeds.
         """
