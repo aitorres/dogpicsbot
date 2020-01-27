@@ -38,7 +38,7 @@ class DogPicsBot:
         ]
 
         self.fetch_breeds()
-        self.api_breeds_url = 'https://dog.ceo/api/breed/{0}/image/random'
+        self.api_breeds_url = 'https://dog.ceo/api/breed/{0}/images/random'
 
         # Stops runtime if the token has not been set
         if self.token is None:
@@ -166,6 +166,7 @@ class DogPicsBot:
         response = requests.get(url=url)
         response_body = response.json()
         image_url = response_body['message']
+        print(image_url)
 
         # Sends the picture
         context.bot.send_photo(
