@@ -37,6 +37,9 @@ class DogPicsBot:
             "🌭",
         ]
 
+        self.fetch_breeds()
+        self.api_breeds_url = 'https://dog.ceo/api/breed/{0}/image/random'
+
         # Stops runtime if the token has not been set
         if self.token is None:
             raise RuntimeError(
@@ -46,6 +49,16 @@ class DogPicsBot:
         # Configures logging in debug level to check for errors
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.DEBUG)
+
+    def fetch_breeds(selfs):
+        """
+        Fetches and stores in memory the list of searchable breeds.
+        """
+
+        response = requests.get(url="https://dog.ceo/api/breeds/list/all")
+        response_body = response.json()
+        breeds = list(response_body['message'])
+        self.breeds = breeds
 
     def run_bot(self):
         """
@@ -97,6 +110,14 @@ class DogPicsBot:
         or if the message includes a trigger word, replies with a dog picture.
         """
 
+        # Possibility: the received message mentions a specific breed
+        breed = None
+        for b in self.breeds:
+            if b in update.message.text.lower():
+                breed = b
+                break
+        mentionsABreed = breed is not None
+
         # Possibility: the received message mentions dogs
         TRIGGER_MESSAGES = [
             "woof",
@@ -114,8 +135,8 @@ class DogPicsBot:
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
 
-        if any([shouldTriggerPicture, isPersonalChat]):
-            self.send_dog_picture(update, context)
+        if any([shouldTriggerPicture, isPersonalChat, mentionsABreed]):
+            self.send_dog_picture(update, context, breed)
 
     def handle_stickers(self, update, context):
         """
@@ -130,14 +151,19 @@ class DogPicsBot:
         if hasDogSticker:
             self.send_dog_picture(update, context)
 
-    def send_dog_picture(self, update, context):
+    def send_dog_picture(self, update, context, breed=None):
         """
         Retrieves a random dog pic URL from the Dog API and sends the
         given dog picture as a photo message on Telegram.
         """
 
+        if breed is not None:
+            url = self.api_breeds_url.format(breed)
+        else:
+            url = self.api_url
+
         # Fetches a dog picture URL from the Dog API
-        response = requests.get(url=self.api_url)
+        response = requests.get(url=url)
         response_body = response.json()
         image_url = response_body['message']
 
