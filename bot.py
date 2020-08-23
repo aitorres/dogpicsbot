@@ -10,6 +10,7 @@ Every picture is fetched through the Dog API (https://dog.ceo/dog-api/).
 
 import logging
 import os
+import random
 
 import requests
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
@@ -94,12 +95,28 @@ class DogPicsBot:
         # Fires up the polling thread. We're live!
         self.updater.start_polling()
 
+    def get_dog_sound(self):
+        """
+        Randomly return a phrase similar to that of barking.
+        """
+
+        SOUNDS = [
+            "Woof woof!",
+            "Bark!",
+            "Awoooo",
+            "Awroooo",
+            "Bark bark!",
+        ]
+
+        i = random.randint(0, len(SOUNDS) - 1)
+        return SOUNDS[i]
+
     def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
         """
 
-        HELP_MSG = "Woof woof! " + \
+        HELP_MSG = f"{self.get_dog_sound()} " + \
                    "If you want a dog picture, send me a message " + \
                    "or use the /dog command."
         context.bot.send_message(chat_id=update.message.chat_id, text=HELP_MSG)
@@ -110,7 +127,7 @@ class DogPicsBot:
         or if the message includes a trigger word, replies with a dog picture.
         """
 
-        # Possibility: the received message mentions a specific breed
+        # Possibility: received message mentions a specific breed
         breed = None
         for b in self.breeds:
             if b in update.message.text.lower():
@@ -118,14 +135,16 @@ class DogPicsBot:
                 break
         mentionsABreed = breed is not None
 
-        # Possibility: the received message mentions dogs
+        # Possibility: received message mentions dogs
         TRIGGER_MESSAGES = [
             "woof",
             "bark",
             "puppy",
+            "pup",
             "dog",
             "perro",
             "perrito",
+            "perrote",
             "doggy",
             "lomito",
         ]
@@ -166,13 +185,12 @@ class DogPicsBot:
         response = requests.get(url=url)
         response_body = response.json()
         image_url = response_body['message']
-        print(image_url)
 
         # Sends the picture
         context.bot.send_photo(
             chat_id=update.message.chat_id,
             photo=image_url,
-            caption="Woof woof!"
+            caption=self.get_dog_sound()
         )
 
 def main():
