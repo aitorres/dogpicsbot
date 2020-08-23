@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2020-08-23
+
+### Added
+
+- Easter egg! The bot now supports _fox_ triggers and sends a fox image accordingly.
+
+### Changed
+
+- Added yet more support for dog / dog-related emoji.
+- Relocated dog triggers for improved extensibility and readability.
+
 ## [1.3.1] - 2020-08-23
 
 ### Added
