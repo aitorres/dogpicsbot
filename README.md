@@ -13,7 +13,7 @@ The bot runs on `python 3` (developed and tested with `python 3.7.3` specificall
 For ease of use, you should create a Python 3 virtual environment and then use `pip` in order to install the requirements, with the following command:
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Installation
