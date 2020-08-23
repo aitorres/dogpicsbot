@@ -40,9 +40,27 @@ class DogPicsBot:
             "🦴",
             "🐾",
         ]
+        self.dog_triggers = [
+            "woof",
+            "bark",
+            "puppy",
+            "pup",
+            "dog",
+            "perro",
+            "perrito",
+            "perrote",
+            "doggy",
+            "lomito",
+        ] + self.dog_emojis
 
-        self.fox_emojis = [
+        self.fox_triggers = [
             "🦊",
+            "zorro",
+            "zorrito",
+            "zorra",
+            "fox",
+            "vixen",
+            "fennec",
         ]
 
         self.fetch_breeds()
@@ -143,23 +161,10 @@ class DogPicsBot:
         mentionsABreed = breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        hasFoxEmoji = any([x in update.message.text.lower() for x in self.fox_emojis])
+        hasFoxEmoji = any([x in update.message.text.lower() for x in self.fox_triggers])
 
         # Possibility: received message mentions dogs
-        TRIGGER_MESSAGES = [
-            "woof",
-            "bark",
-            "puppy",
-            "pup",
-            "dog",
-            "perro",
-            "perrito",
-            "perrote",
-            "doggy",
-            "lomito",
-        ]
-        TRIGGER_MESSAGES += self.dog_emojis
-        shouldTriggerPicture = any([x in update.message.text.lower() for x in TRIGGER_MESSAGES])
+        shouldTriggerPicture = any([x in update.message.text.lower() for x in self.dog_triggers])
 
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != 'group'
