@@ -41,7 +41,6 @@ class DogPicsBot:
             "🐾",
         ]
 
-        self.api_fox_url = 'https://randomfox.ca/floof/'
         self.fox_emojis = [
             "🦊",
         ]
@@ -215,12 +214,9 @@ class DogPicsBot:
         # TODO: Use only one "send_picture" method for both types
         """
 
-        url = self.api_fox_url
-
-        # Fetches a fox picture URL from the Fox API
-        response = requests.get(url=url)
-        response_body = response.json()
-        image_url = response_body['image']
+        # Workaround since Fox API gives 403 error:
+        i = random.randint(1, 121)
+        image_url = f"https://randomfox.ca/images/{i}.jpg"
 
         # Sends the picture
         context.bot.send_photo(
