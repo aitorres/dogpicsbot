@@ -47,6 +47,8 @@ class DogPicsBot:
             "pup",
             "dog",
             "perro",
+            "perra",
+            "perruno",
             "perrito",
             "perrote",
             "doggy",
