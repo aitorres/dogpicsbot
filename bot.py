@@ -40,27 +40,26 @@ class DogPicsBot:
             "🦴",
             "🐾",
         ]
+
+        # These will be checked against as substrings within each
+        # message, so different variations are not required if their
+        # radix is present (e.g. "pup" covers "puppy" and "pupper" too)
         self.dog_triggers = [
             "woof",
             "bark",
-            "puppy",
             "pup",
             "dog",
-            "perro",
-            "perra",
-            "perruno",
-            "perrito",
-            "perrote",
-            "doggy",
+            "perr",
             "lomito",
         ] + self.dog_emojis
 
         self.api_fox_url = 'https://randomfox.ca/floof/'
+
+        # Just like dog triggers, these will be checked against
+        # as substrings, variations are not required
         self.fox_triggers = [
             "🦊",
-            "zorro",
-            "zorrito",
-            "zorra",
+            "zorr",
             "fox",
             "vixen",
             "fennec",
