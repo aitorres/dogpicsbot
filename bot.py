@@ -45,13 +45,13 @@ class DogPicsBot:
         # message, so different variations are not required if their
         # radix is present (e.g. "pup" covers "puppy" and "pupper" too)
         self.dog_triggers = [
-                                "woof",
-                                "bark",
-                                "pup",
-                                "dog",
-                                "perr",
-                                "lomito",
-                            ] + self.dog_emojis
+            "woof",
+            "bark",
+            "pup",
+            "dog",
+            "perr",
+            "lomito",
+        ] + self.dog_emojis
 
         self.api_fox_url = 'https://randomfox.ca/floof/'
 
@@ -261,7 +261,6 @@ class DogPicsBot:
             photo=image_url,
             caption="Yip yip!"
         )
-
 
 def main():
     """
