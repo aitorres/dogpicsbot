@@ -4,7 +4,7 @@ A simple Telegram bot that sends random dog pictures (and more!).
 
 You can test the bot on Telegram, just click here: [@DogPicsBot](https://t.me/dogpicsbot).
 
-Currently on [v1.4.2](https://github.com/aitorres/dogpicsbot/releases/tag/v1.3.0). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
+Currently on [v1.5.0](https://github.com/aitorres/dogpicsbot/releases/tag/v1.5.0). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
 
 ## Requirements
 
@@ -36,7 +36,6 @@ The next features to be developed are:
 
 - Replying "intelligently" to messages relating to dogs (e.g. emotions)
 - Explore the use of other dog pics APIs
-- Replying to sad messages with dog pictures :(
 - And more!
 
 ## Contributing
