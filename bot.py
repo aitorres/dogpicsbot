@@ -65,6 +65,21 @@ class DogPicsBot:
             "fennec",
         ]
 
+        # Same as earlier triggers, but for sad messages
+        self.sad_triggers = [
+            "😔",
+            "😢",
+            "😭",
+            "😓",
+            "sad",
+            "not good",
+            "unhappy",
+            "depressed",
+            "miserable",
+            "down",
+            "downhearted",
+        ]
+
         self.fetch_breeds()
         self.api_breeds_url = 'https://dog.ceo/api/breed/{0}/images/random'
 
@@ -165,6 +180,9 @@ class DogPicsBot:
         # Easter Egg Possibility: has a fox emoji
         hasFoxEmoji = any([x in update.message.text.lower() for x in self.fox_triggers])
 
+        # Possibility: received a sad message
+        isSadMessage = any([x in update.message.text.lower() for x in self.sad_triggers])
+
         # Possibility: received message mentions dogs
         shouldTriggerPicture = any([x in update.message.text.lower() for x in self.dog_triggers])
 
@@ -173,6 +191,8 @@ class DogPicsBot:
 
         if hasFoxEmoji:
             self.send_fox_picture(update, context)
+        elif isSadMessage:
+            self.send_dog_picture(update, context, breed, "Don't be sad, here is a cute dog!")
         elif any([shouldTriggerPicture, isPersonalChat, mentionsABreed]):
             self.send_dog_picture(update, context, breed)
 
@@ -189,7 +209,7 @@ class DogPicsBot:
         if hasDogSticker:
             self.send_dog_picture(update, context)
 
-    def send_dog_picture(self, update, context, breed=None):
+    def send_dog_picture(self, update, context, breed=None, caption=None):
         """
         Retrieves a random dog pic URL from the Dog API and sends the
         given dog picture as a photo message on Telegram.
@@ -205,12 +225,21 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body['message']
 
-        # Sends the picture
-        context.bot.send_photo(
-            chat_id=update.message.chat_id,
-            photo=image_url,
-            caption=self.get_dog_sound()
-        )
+        if caption is not None:
+            context.bot.send_photo(
+                chat_id=update.message.chat_id,
+                reply_to_message_id=update.message.message_id,
+                photo=image_url,
+                caption=caption
+            )
+        else:
+            # Sends the picture
+            context.bot.send_photo(
+                chat_id=update.message.chat_id,
+                photo=image_url,
+                caption=self.get_dog_sound()
+            )
+
 
     def send_fox_picture(self, update, context):
         """
@@ -241,6 +270,7 @@ def main():
 
     dog_pics_bot = DogPicsBot()
     dog_pics_bot.run_bot()
+
 
 # If the script is run directly, fires the main procedure
 if __name__ == "__main__":
