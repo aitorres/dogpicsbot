@@ -16,11 +16,19 @@ For ease of use, you should create a Python 3 virtual environment and then use `
 pip install -r requirements.txt
 ```
 
+If you're more onto using `conda`, the following command will create an environment, activate it and install the requirements:
+
+```bash
+conda create -n dogpicsbot python=3.7
+conda activate dogpicsbot
+pip install -r requirements.txt
+```
+
 ## Installation
 
 Simply clone this repository, fetch the requirements on a virtual environment as stated above and then set a new environment variable named `DPB_TG_TOKEN` with your Telegram bot API token. If you don't have a valid token, [check this out](https://core.telegram.org/bots).
 
-Note that one feature (sending dog pictures freely through group chats on certain trigger words) requires the bot's Privacy Mode to be disabled (this can be done through @BotFather).
+Note that one feature (sending dog pictures freely through group chats on certain trigger words) requires the bot's Privacy Mode to be **disabled** (this can be done through @BotFather).
 
 ## Usage
 
