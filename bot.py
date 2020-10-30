@@ -17,6 +17,9 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
 
 class DogPicsBot:
+
+    TELEGRAM_GROUP = 'group'
+
     """
     A class to encapsulate all relevant methods of the Dog Pics
     Telegram bot.
@@ -168,26 +171,29 @@ class DogPicsBot:
         Checks if a message comes from a group. If that is not the case,
         or if the message includes a trigger word, replies with a dog picture.
         """
+        words = set(update.message.text.lower().split())
+        logging.debug(f'Received message: {update.message.text}')
+        logging.debug(f'Splitted words: {", ".join(words)}')
 
         # Possibility: received message mentions a specific breed
         breed = None
         for b in self.breeds:
-            if b in update.message.text.lower():
+            if b in words:
                 breed = b
                 break
         mentionsABreed = breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        hasFoxEmoji = any([x in update.message.text.lower() for x in self.fox_triggers])
+        hasFoxEmoji = any([x in words for x in self.fox_triggers])
 
         # Possibility: received a sad message
-        isSadMessage = any([x in update.message.text.lower() for x in self.sad_triggers])
+        isSadMessage = any([x in words for x in self.sad_triggers])
 
         # Possibility: received message mentions dogs
-        shouldTriggerPicture = any([x in update.message.text.lower() for x in self.dog_triggers])
+        shouldTriggerPicture = any([x in words for x in self.dog_triggers])
 
         # Possibility: it's a personal chat message
-        isPersonalChat = update.message.chat.type != 'group'
+        isPersonalChat = update.message.chat.type != self.TELEGRAM_GROUP
 
         if hasFoxEmoji:
             self.send_fox_picture(update, context)
