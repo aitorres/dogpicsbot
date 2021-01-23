@@ -190,7 +190,12 @@ class DogPicsBot:
         isSadMessage = any([x in words for x in self.sad_triggers])
 
         # Possibility: received message mentions dogs
-        shouldTriggerPicture = any([x in words for x in self.dog_triggers])
+        shouldTriggerPicture = False
+        for dogTrigger in self.dog_triggers:
+            for word in words:
+                if word.startswith(dogTrigger):
+                    shouldTriggerPicture = True
+                    break
 
         # Possibility: it's a personal chat message
         isPersonalChat = update.message.chat.type != self.TELEGRAM_GROUP
