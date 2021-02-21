@@ -17,13 +17,13 @@ from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
 
 class DogPicsBot:
-
-    TELEGRAM_GROUP = 'group'
-
     """
     A class to encapsulate all relevant methods of the Dog Pics
     Telegram bot.
     """
+
+    TELEGRAM_GROUP = 'group'
+    TELEGRAM_SUPERGROUP = 'supergroup'
 
     def __init__(self):
         """
@@ -198,7 +198,7 @@ class DogPicsBot:
                     break
 
         # Possibility: it's a personal chat message
-        isPersonalChat = update.message.chat.type != self.TELEGRAM_GROUP
+        isPersonalChat = update.message.chat.type not in [self.TELEGRAM_GROUP, self.TELEGRAM_SUPERGROUP]
 
         if hasFoxEmoji:
             self.send_fox_picture(update, context)
