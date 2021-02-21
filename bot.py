@@ -81,6 +81,7 @@ class DogPicsBot:
             "miserable",
             "down",
             "downhearted",
+            'triste',
         ]
 
         self.fetch_breeds()
