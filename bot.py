@@ -22,8 +22,8 @@ class DogPicsBot:
     Telegram bot.
     """
 
-    TELEGRAM_GROUP = 'group'
-    TELEGRAM_SUPERGROUP = 'supergroup'
+    telegram_group = 'group'
+    telegram_supergroup = 'supergroup'
 
     def __init__(self):
         """
@@ -182,30 +182,30 @@ class DogPicsBot:
             if b in words:
                 breed = b
                 break
-        mentionsABreed = breed is not None
+        mentions_a_breed = breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        hasFoxEmoji = any([x in words for x in self.fox_triggers])
+        has_fox_emoji = any([x in words for x in self.fox_triggers])
 
         # Possibility: received a sad message
-        isSadMessage = any([x in words for x in self.sad_triggers])
+        is_sad_message = any([x in words for x in self.sad_triggers])
 
         # Possibility: received message mentions dogs
-        shouldTriggerPicture = False
-        for dogTrigger in self.dog_triggers:
+        should_trigger_picture = False
+        for dog_trigger in self.dog_triggers:
             for word in words:
-                if word.startswith(dogTrigger):
-                    shouldTriggerPicture = True
+                if word.startswith(dog_trigger):
+                    should_trigger_picture = True
                     break
 
         # Possibility: it's a personal chat message
-        isPersonalChat = update.message.chat.type not in [self.TELEGRAM_GROUP, self.TELEGRAM_SUPERGROUP]
+        is_personal_chat = update.message.chat.type not in [self.telegram_group, self.telegram_supergroup]
 
-        if hasFoxEmoji:
+        if has_fox_emoji:
             self.send_fox_picture(update, context)
-        elif isSadMessage:
+        elif is_sad_message:
             self.send_dog_picture(update, context, breed, "Don't be sad, here is a cute dog!")
-        elif any([shouldTriggerPicture, isPersonalChat, mentionsABreed]):
+        elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
             self.send_dog_picture(update, context, breed)
 
     def handle_stickers(self, update, context):
@@ -214,11 +214,11 @@ class DogPicsBot:
         picture if that's the case.
         """
 
-        hasSticker = update.message.sticker is not None
-        hasEmojiSticker = hasSticker and update.message.sticker.emoji is not None
-        hasDogSticker = hasEmojiSticker and any([e in update.message.sticker.emoji for e in self.dog_emojis])
+        has_sticker = update.message.sticker is not None
+        has_emoji_sticker = has_sticker and update.message.sticker.emoji is not None
+        has_dog_sticker = has_emoji_sticker and any([e in update.message.sticker.emoji for e in self.dog_emojis])
 
-        if hasDogSticker:
+        if has_dog_sticker:
             self.send_dog_picture(update, context)
 
     def send_dog_picture(self, update, context, breed=None, caption=None):
