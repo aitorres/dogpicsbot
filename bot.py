@@ -222,7 +222,7 @@ class DogPicsBot:
 
         if has_dog_sticker:
             self.send_dog_picture(update, context)
-    
+
     def send_dog_picture(self, update, context, breed=None, caption=None):
         """
         Retrieves a random dog pic URL from the Dog API and sends the
@@ -257,7 +257,7 @@ class DogPicsBot:
         image_url = response_body['image']
 
         self.send_picture(update, context, image_url, "Yip yip!")
-           
+
     def send_picture(self, update, context, image_url, caption):
         """
         Retrieves a pic URL from the provided API and sends the
@@ -271,16 +271,8 @@ class DogPicsBot:
             caption=caption
         )
 
-def main():
-    """
-    Entry point of the script. If run directly, instantiates the
-    DogPicsBot class and fires it up!
-    """
-
-    dog_pics_bot = DogPicsBot()
-    dog_pics_bot.run_bot()
-
 
 # If the script is run directly, fires the main procedure
 if __name__ == "__main__":
-    main()
+    bot = DogPicsBot()
+    bot.run_bot()
