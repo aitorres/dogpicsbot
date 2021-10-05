@@ -188,7 +188,9 @@ class DogPicsBot:
         has_fox_emoji = any([x in words for x in self.fox_triggers])
 
         # Possibility: received a sad message
-        is_sad_message = any([x in words for x in self.sad_triggers])
+        # is_sad_message = any([x in words for x in self.sad_triggers])
+        # updated list comprehension to better handle triggers with spaces in between
+        is_sad_message = any([y for y in words for x in self.sad_triggers if y in x])
 
         # Possibility: received message mentions dogs
         should_trigger_picture = False
@@ -220,7 +222,7 @@ class DogPicsBot:
 
         if has_dog_sticker:
             self.send_dog_picture(update, context)
-
+    
     def send_dog_picture(self, update, context, breed=None, caption=None):
         """
         Retrieves a random dog pic URL from the Dog API and sends the
@@ -238,28 +240,15 @@ class DogPicsBot:
         image_url = response_body['message']
 
         if caption is not None:
-            context.bot.send_photo(
-                chat_id=update.message.chat_id,
-                reply_to_message_id=update.message.message_id,
-                photo=image_url,
-                caption=caption
-            )
+            self.send_picture(update, context, image_url, caption)
         else:
-            # Sends the picture
-            context.bot.send_photo(
-                chat_id=update.message.chat_id,
-                photo=image_url,
-                caption=self.get_dog_sound()
-            )
+            self.send_picture(update, context, image_url, self.get_dog_sound())
 
 
     def send_fox_picture(self, update, context):
         """
         Retrieves a random fox pic URL from the Fox API and sends the
         given fox picture as a photo message on Telegram.
-
-        This is an easter egg!
-        # TODO: Use only one "send_picture" method for both types
         """
 
         # Fetches a dog picture URL from the Dog API
@@ -267,11 +256,19 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body['image']
 
+        self.send_picture(update, context, image_url, "Yip yip!")
+           
+    def send_picture(self, update, context, image_url, caption):
+        """
+        Retrieves a pic URL from the provided API and sends the
+        given picture as a photo reply message on Telegram.
+        """
         # Sends the picture
         context.bot.send_photo(
             chat_id=update.message.chat_id,
+            reply_to_message_id=update.message.message_id,
             photo=image_url,
-            caption="Yip yip!"
+            caption=caption
         )
 
 def main():
