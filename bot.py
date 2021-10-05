@@ -185,12 +185,10 @@ class DogPicsBot:
         mentions_a_breed = breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        has_fox_emoji = any([x in words for x in self.fox_triggers])
+        has_fox_emoji = any(x in words for x in self.fox_triggers)
 
         # Possibility: received a sad message
-        # is_sad_message = any([x in words for x in self.sad_triggers])
-        # updated list comprehension to better handle triggers with spaces in between
-        is_sad_message = any([y for y in words for x in self.sad_triggers if y in x])
+        is_sad_message = any(y for y in words for x in self.sad_triggers if y in x)
 
         # Possibility: received message mentions dogs
         should_trigger_picture = False
@@ -207,7 +205,7 @@ class DogPicsBot:
             self.send_fox_picture(update, context)
         elif is_sad_message:
             self.send_dog_picture(update, context, breed, "Don't be sad, here is a cute dog!")
-        elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
+        elif any(should_trigger_picture, is_personal_chat, mentions_a_breed):
             self.send_dog_picture(update, context, breed)
 
     def handle_stickers(self, update, context):
