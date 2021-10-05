@@ -1,13 +1,13 @@
 import pytest
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import List, Optional, Tuple
 
 from bot import DogPicsBot
 
 # Mocking Telegram's API
 @dataclass
 class MockDispatcher:
-    handler_names: list[str] = field(default_factory=list)
+    handler_names: List[str] = field(default_factory=list)
 
     def add_handler(self, handler):
         self.handler_names.append(handler.__name__)
@@ -48,7 +48,7 @@ class MockUpdate:
 @dataclass
 class MockContextBot:
     # tuple of (intended_chat_id, sent_message)
-    messages: list[tuple[int, str]] = field(default_factory=list)
+    messages: List[Tuple[int, str]] = field(default_factory=list)
 
     def send_message(self, chat_id, text):
         self.messages.append((chat_id, text))
