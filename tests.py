@@ -156,7 +156,7 @@ class MockResponse:
 
         if "breed" in self.url:
             return {
-                "message": "https://dog.pics/specific_breed/dog.png"
+                "message": "https://dog.pics/specific-breed/dog.png"
             }
 
         if self.url == RANDOMFOX_API_URL:
@@ -411,3 +411,34 @@ def test_handle_text_messages_for_sad_message(monkeypatch: pytest.MonkeyPatch):
     assert reply_to_message_id == update.message.message_id
     assert photo_url == "https://dog.pics/dog.png"
     assert caption == "Don't be sad, have a cute dog!"
+
+
+def test_handle_text_messages_for_breed_message(
+    monkeypatch: pytest.MonkeyPatch
+):
+    """
+    Unit test to verify that, in the presence of a breed name within a
+    message, the bot replies with a specific dog picture and a generic caption.
+    """
+
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(
+        chat_id=randint(0, 10000), message_id=randint(0, 10000), message="i have a pug at home",
+    )
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # one picture sent through context
+    assert len(context.bot.photos) == 1
+
+    # contains the chat_id, original message id, photo url and caption
+    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
+    assert chat_id == update.message.chat_id
+    assert reply_to_message_id == update.message.message_id
+    assert photo_url == "https://dog.pics/specific-breed/dog.png"
+    assert caption in DOG_SOUNDS
