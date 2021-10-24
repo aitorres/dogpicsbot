@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2021-10-24
+
+### Changed
+
+- Fixed a regression that made the bot incompatible with Python 3.7 after partial typing was added to the bot
+- Reordered bot initialization statements in order to avoid hitting the API (in order to get the most recent list of breeds) if a Telegram bot token is not set.
+
 ## [1.6.0] - 2021-10-24
 
 ### Added
