@@ -253,8 +253,24 @@ def test_handle_text_messages_for_personal_message(
     assert caption in DOG_SOUNDS
 
 
+@pytest.mark.parametrize(
+    "dog_message",
+    [
+        "I really like dogs",
+        "Dogs go woof",
+        "woof woof",
+        "I have a new pup",
+        "I have a new pupper",
+        "tengo un perro",
+        "mira mi lomito",
+        "look a doggo",
+        "look! a! doggo!",
+        "puppy!",
+        "woof!",
+    ]
+)
 def test_handle_text_messages_for_group_message_with_dogs(
-    monkeypatch: pytest.MonkeyPatch
+    monkeypatch: pytest.MonkeyPatch, dog_message: str
 ):
     """
     Unit test to verify that the bot properly sends a dog picture if
@@ -267,8 +283,7 @@ def test_handle_text_messages_for_group_message_with_dogs(
         chat_id=randint(0, 10000),
         message_id=randint(0, 10000),
         chat_type=TELEGRAM_CHAT_TYPE_GROUP,
-        # TODO: parametrize this test for several messages
-        message="I really like dogs",
+        message=dog_message,
     )
     context = get_mock_context()
 
