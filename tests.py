@@ -511,3 +511,17 @@ def test_handle_text_messages_for_fox_reference(
     assert reply_to_message_id == update.message.message_id
     assert photo_url == "https://fox.pics/fox.png"
     assert caption == "Yip yip!"
+
+
+def test_bot_fails_without_telegram_bot_token_in_environment(
+    monkeypatch: pytest.MonkeyPatch
+):
+    """
+    Unit test to verify that the bot properly raises an exception if
+    it's initialized in an environment that doesn't have a proper
+    Telegram Bot token set up as an env var.
+    """
+
+    monkeypatch.setenv("DPB_TG_TOKEN", "")
+    with pytest.raises(RuntimeError, match="FATAL: No token was found."):
+        DogPicsBot()

@@ -64,8 +64,6 @@ class DogPicsBot:
         and checks if everything's O.K. for the bot to work as expected.
         """
 
-        # This environment variable should be set before using the bot
-        self.token = os.environ.get("DPB_TG_TOKEN")
         self.dog_emojis = [
             "🐶",
             "🐕",
@@ -114,8 +112,11 @@ class DogPicsBot:
             "triste",
         ]
 
-        # Stops runtime if the token has not been set
-        if self.token is None:
+        # This environment variable should be set before using the bot
+        self.token = os.environ.get("DPB_TG_TOKEN", "")
+
+        # Stops runtime if the token has not been set properly
+        if not self.token:
             raise RuntimeError(
                 "FATAL: No token was found. "
                 "You might need to specify one or more environment variables."
