@@ -198,8 +198,6 @@ def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
 def get_mock_update(
     message="This is a message",
     chat_type=TELEGRAM_CHAT_TYPE_GROUP,
-    chat_id=1234,
-    message_id=5678,
     is_sticker=False,
     emoji=None,
 ):
@@ -211,9 +209,9 @@ def get_mock_update(
 
     return MockUpdate(
         message=MockMessage(
-            chat_id=chat_id,
+            message_id=randint(0, 100000),
+            chat_id=randint(0, 100000),
             chat=chat,
-            message_id=message_id,
             text=message,
             sticker=MockSticker(emoji=emoji) if is_sticker else None,
         ),
@@ -284,11 +282,7 @@ def test_handle_text_messages_for_personal_message(
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(
-        chat_id=randint(0, 10000),
-        message_id=randint(0, 10000),
-        chat_type="personal",
-    )
+    update = get_mock_update(chat_type="personal")
     context = get_mock_context()
 
     # context is empty of sent photos
@@ -334,10 +328,7 @@ def test_handle_text_messages_for_group_message_with_dogs(
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
     update = get_mock_update(
-        chat_id=randint(0, 10000),
-        message_id=randint(0, 10000),
-        chat_type=TELEGRAM_CHAT_TYPE_GROUP,
-        message=dog_message,
+        chat_type=TELEGRAM_CHAT_TYPE_GROUP, message=dog_message
     )
     context = get_mock_context()
 
@@ -368,10 +359,7 @@ def test_handle_text_messages_for_group_message_without_dogs(
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
     update = get_mock_update(
-        chat_id=randint(0, 10000),
-        message_id=randint(0, 10000),
-        chat_type=TELEGRAM_CHAT_TYPE_GROUP,
-        message="I really like plants",
+        chat_type=TELEGRAM_CHAT_TYPE_GROUP, message="I really like plants",
     )
     context = get_mock_context()
 
@@ -384,7 +372,18 @@ def test_handle_text_messages_for_group_message_without_dogs(
     assert len(context.bot.photos) == 0
 
 
-def test_handle_text_messages_for_sad_message(monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize(
+    "sad_message",
+    [
+        "sad",
+        "i'm really sad right now",
+        "😢",
+        "mano, estoy triste",
+    ]
+)
+def test_handle_text_messages_for_sad_message(
+    monkeypatch: pytest.MonkeyPatch, sad_message: str
+):
     """
     Unit test to verify that, in the presence of a sad trigger within a
     message, the bot replies with a dog picture and a particular caption.
@@ -392,9 +391,7 @@ def test_handle_text_messages_for_sad_message(monkeypatch: pytest.MonkeyPatch):
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(
-        chat_id=randint(0, 10000), message_id=randint(0, 10000), message="sad"
-    )
+    update = get_mock_update(message=sad_message)
     context = get_mock_context()
 
     # context is empty of sent photos
@@ -423,9 +420,7 @@ def test_handle_text_messages_for_breed_message(
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(
-        chat_id=randint(0, 10000), message_id=randint(0, 10000), message="i have a pug at home",
-    )
+    update = get_mock_update(message="i have a pug at home")
     context = get_mock_context()
 
     # context is empty of sent photos
