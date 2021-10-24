@@ -1,4 +1,5 @@
-"""A simple Telegram bot that sends random dog pictures.
+"""
+A simple Telegram bot that sends random dog pictures.
 
 This code declares a Telegram bot that will reply every message with
 a random dog picture.
@@ -11,9 +12,43 @@ Every picture is fetched through the Dog API (https://dog.ceo/dog-api/).
 import logging
 import os
 import random
+from typing import Final, List
 
 import requests
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG
+)
+
+
+TELEGRAM_CHAT_TYPE_GROUP: Final[str] = "group"
+TELEGRAM_CHAT_TYPE_SUPERGROUP: Final[str] = "supergroup"
+TELEGRAM_GROUP_CHAT_TYPES: Final[List[str]] = [
+    TELEGRAM_CHAT_TYPE_GROUP,
+    TELEGRAM_CHAT_TYPE_SUPERGROUP,
+]
+
+
+DOG_SOUNDS: Final[List[str]] = [
+    "Woof woof!",
+    "Bark!",
+    "Awoooo!",
+    "Awroooo!",
+    "Bark bark!",
+]
+
+
+DOGS_API_DOG_PICTURE_URL: Final[str] = (
+    "https://dog.ceo/api/breeds/image/random"
+)
+DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: Final[str] = (
+    "https://dog.ceo/api/breed/{0}/images/random"
+)
+
+RANDOMFOX_API_URL: Final[str] = "https://randomfox.ca/floof/"
 
 
 class DogPicsBot:
@@ -22,18 +57,6 @@ class DogPicsBot:
     Telegram bot.
     """
 
-    # TODO: why are some class variables and other instance variables?
-    dog_sounds = [
-        "Woof woof!",
-        "Bark!",
-        "Awoooo!",
-        "Awroooo!",
-        "Bark bark!",
-    ]
-
-    telegram_group = 'group'
-    telegram_supergroup = 'supergroup'
-
     def __init__(self):
         """
         Constructor of the class. Initializes certain instance variables
@@ -41,8 +64,7 @@ class DogPicsBot:
         """
 
         # This environment variable should be set before using the bot
-        self.token = os.environ.get('DPB_TG_TOKEN')
-        self.api_url = 'https://dog.ceo/api/breeds/image/random'
+        self.token = os.environ.get("DPB_TG_TOKEN")
         self.dog_emojis = [
             "🐶",
             "🐕",
@@ -64,8 +86,6 @@ class DogPicsBot:
             "perr",
             "lomito",
         ] + self.dog_emojis
-
-        self.api_fox_url = 'https://randomfox.ca/floof/'
 
         # Just like dog triggers, these will be checked against
         # as substrings, variations are not required
@@ -94,17 +114,17 @@ class DogPicsBot:
         ]
 
         self.fetch_breeds()
-        self.api_breeds_url = 'https://dog.ceo/api/breed/{0}/images/random'
 
         # Stops runtime if the token has not been set
         if self.token is None:
             raise RuntimeError(
-                "FATAL: No token was found. " + \
-                "You might need to specify one or more environment variables.")
+                "FATAL: No token was found. "
+                "You might need to specify one or more environment variables."
+            )
 
-        # Configures logging in debug level to check for errors
-        logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                            level=logging.DEBUG)
+        # Instantiates the bot updater and dispatcher
+        self.updater = Updater(self.token, use_context=True)
+        self.dispatcher = self.updater.dispatcher
 
     def fetch_breeds(self):
         """
@@ -122,18 +142,14 @@ class DogPicsBot:
         thread in order to successfully reply to messages.
         """
 
-        # Instantiates the bot updater
-        self.updater = Updater(self.token, use_context=True)
-        self.dispatcher = self.updater.dispatcher
-
         # Declares and adds handlers for commands that shows help info
-        start_handler = CommandHandler('start', self.show_help)
-        help_handler = CommandHandler('help', self.show_help)
+        start_handler = CommandHandler("start", self.show_help)
+        help_handler = CommandHandler("help", self.show_help)
         self.dispatcher.add_handler(start_handler)
         self.dispatcher.add_handler(help_handler)
 
         # Declares and adds a handler to send a dog picture on demand
-        dog_handler = CommandHandler('dog', self.send_dog_picture)
+        dog_handler = CommandHandler("dog", self.send_dog_picture)
         self.dispatcher.add_handler(dog_handler)
 
         # Declares and adds a handler for text messages that will reply with
@@ -155,18 +171,18 @@ class DogPicsBot:
         Randomly return a phrase similar to that of barking.
         """
 
-        i = random.randint(0, len(DogPicsBot.dog_sounds) - 1)
-        return DogPicsBot.dog_sounds[i]
+        i = random.randint(0, len(DOG_SOUNDS) - 1)
+        return DOG_SOUNDS[i]
 
     def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
         """
 
-        HELP_MSG = f"{self.get_random_dog_sound()} " + \
+        help_msg = f"{self.get_random_dog_sound()} " + \
                    "If you want a dog picture, send me a message " + \
                    "or use the /dog command."
-        context.bot.send_message(chat_id=update.message.chat_id, text=HELP_MSG)
+        context.bot.send_message(chat_id=update.message.chat_id, text=help_msg)
 
     def handle_text_messages(self, update, context):
         """
@@ -174,22 +190,26 @@ class DogPicsBot:
         or if the message includes a trigger word, replies with a dog picture.
         """
         words = set(update.message.text.lower().split())
-        logging.debug(f'Received message: {update.message.text}')
-        logging.debug(f'Splitted words: {", ".join(words)}')
+        logging.debug("Received message: %s", update.message.text)
+        logging.debug("Splitted words: %s", ", ".join(words))
 
         # Possibility: received message mentions a specific breed
-        breed = None
-        for b in self.breeds:
-            if b in words:
-                breed = b
+        mentioned_breed = None
+        for breed in self.breeds:
+            if breed in words:
+                mentioned_breed = breed
                 break
-        mentions_a_breed = breed is not None
+        mentions_a_breed = mentioned_breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        has_fox_emoji = any(fox_trigger in words for fox_trigger in self.fox_triggers)
+        has_fox_emoji = any(
+            fox_trigger in words for fox_trigger in self.fox_triggers
+        )
 
         # Possibility: received a sad message
-        is_sad_message = any(sad_trigger in words for sad_trigger in self.sad_triggers)
+        is_sad_message = any(
+            sad_trigger in words for sad_trigger in self.sad_triggers
+        )
 
         # Possibility: received message mentions dogs
         should_trigger_picture = False
@@ -200,14 +220,18 @@ class DogPicsBot:
                     break
 
         # Possibility: it's a personal chat message
-        is_personal_chat = update.message.chat.type not in [self.telegram_group, self.telegram_supergroup]
+        chat_type = update.message.chat.type
+        is_personal_chat = chat_type not in TELEGRAM_GROUP_CHAT_TYPES
 
         if has_fox_emoji:
             self.send_fox_picture(update, context)
         elif is_sad_message:
-            self.send_dog_picture(update, context, breed, "Don't be sad, have a cute dog!")
+            sad_caption = "Don't be sad, have a cute dog!"
+            self.send_dog_picture(
+                update, context, mentioned_breed, sad_caption
+            )
         elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
-            self.send_dog_picture(update, context, breed)
+            self.send_dog_picture(update, context, mentioned_breed)
 
     def handle_stickers(self, update, context):
         """
@@ -216,8 +240,12 @@ class DogPicsBot:
         """
 
         has_sticker = update.message.sticker is not None
-        has_emoji_sticker = has_sticker and update.message.sticker.emoji is not None
-        has_dog_sticker = has_emoji_sticker and any(e in update.message.sticker.emoji for e in self.dog_emojis)
+        has_emoji_sticker = (
+            has_sticker and update.message.sticker.emoji is not None
+        )
+        has_dog_sticker = has_emoji_sticker and any(
+            e in update.message.sticker.emoji for e in self.dog_emojis
+        )
 
         if has_dog_sticker:
             self.send_dog_picture(update, context)
@@ -228,10 +256,11 @@ class DogPicsBot:
         given dog picture as a photo message on Telegram.
         """
 
-        if breed is not None:
-            url = self.api_breeds_url.format(breed)
-        else:
-            url = self.api_url
+        url = (
+            DOGS_API_DOG_PICTURE_URL
+            if breed is None
+            else DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL.format(breed)
+        )
 
         # Fetches a dog picture URL from the Dog API
         response = requests.get(url=url)
@@ -241,8 +270,9 @@ class DogPicsBot:
         if caption is not None:
             self.send_picture(update, context, image_url, caption)
         else:
-            self.send_picture(update, context, image_url, self.get_random_dog_sound())
-
+            self.send_picture(
+                update, context, image_url, self.get_random_dog_sound()
+            )
 
     def send_fox_picture(self, update, context):
         """
@@ -251,7 +281,7 @@ class DogPicsBot:
         """
 
         # Fetches a dog picture URL from the Dog API
-        response = requests.get(url=self.api_fox_url)
+        response = requests.get(url=RANDOMFOX_API_URL)
         response_body = response.json()
         image_url = response_body['image']
 
