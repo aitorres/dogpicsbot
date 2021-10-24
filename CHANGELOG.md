@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2021-10-24
+
+### Added
+
+- More triggers for sad messages (e.g. `triste`, Spanish word for `sad`)
+- New [tests](tests.py) module that contains mockups and unit tests in order to ensure that the bot runs properly at all times, and to prevent new functionalities and bug fixes from introducing unexpected behavior and bugs.
+- Github Actions workflow set up in the repository in order to run tests automatically on every push, and requiring a minimum coverage of 80% in order to pass
+
+### Changed
+
+- Fixed variable names in order to follow Python standards and conventions (#11, thanks @seleregb)
+- Refactored the handlers that send pictures in order to avoid code repetition (#14, thanks @seleregb)
+- Dependencies in [requirements.txt](requirements.txt) have been updated and simplified to keep main dependencies only.
+- The bot is now fired up directly when running `bot.py`, avoiding an intermediate call to a `main` function (that no longer exists)
+- General code cleanup, refactoring and updates
+
 ## [1.5.3] - 2021-02-20
 
 ### Changed

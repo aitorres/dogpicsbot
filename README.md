@@ -4,11 +4,11 @@ A simple Telegram bot that sends random dog pictures (and more!).
 
 You can test the bot on Telegram, just click here: [@DogPicsBot](https://t.me/dogpicsbot).
 
-Currently on [v1.5.3](https://github.com/aitorres/dogpicsbot/releases/tag/v1.5.3). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
+Currently on [v1.6.0](https://github.com/aitorres/dogpicsbot/releases/tag/v1.6.0). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
 
 ## Requirements
 
-The bot runs on `python 3` (developed and tested with `python 3.7.3` specifically), and uses the packages listed on the `requirements.txt` file.
+The bot runs on **Python 3** (officially supporting Python 3.7, 3.8 and 3.9), and depends on packages listed on the `requirements.txt` file.
 
 For ease of use, you should create a Python 3 virtual environment and then use `pip` in order to install the requirements, with the following command:
 
