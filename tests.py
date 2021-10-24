@@ -128,11 +128,11 @@ def test_show_help(monkeypatch):
     assert "If you want a dog picture, send me a message or use the /dog command." in sent_message
 
 
-def test_handle_text_messages(monkeypatch):
+def test_handle_text_messages_for_personal_message(monkeypatch):
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
     update = get_mock_update(
-        chat_id=randint(0, 10000), message_id=randint(0, 10000),
+        chat_id=randint(0, 10000), message_id=randint(0, 10000), type="personal"
     )
     context = get_mock_context()
 
@@ -149,6 +149,46 @@ def test_handle_text_messages(monkeypatch):
     assert chat_id == update.message.chat_id
     assert reply_to_message_id == update.message.message_id
     assert caption in DogPicsBot.dog_sounds
+
+
+def test_handle_text_messages_for_group_message_with_dogs(monkeypatch):
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(
+        chat_id=randint(0, 10000), message_id=randint(0, 10000), type="group", message="I really like dogs"
+    )
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # one picture sent through context
+    assert len(context.bot.photos) == 1
+
+    # the tuple contains the chat_id, original message id, photo url (ignored) and caption
+    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    assert chat_id == update.message.chat_id
+    assert reply_to_message_id == update.message.message_id
+    assert caption in DogPicsBot.dog_sounds
+
+
+def test_handle_text_messages_for_group_message_without_dogs(monkeypatch):
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(
+        chat_id=randint(0, 10000), message_id=randint(0, 10000), type="group", message="I really like plants"
+    )
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # context is still empty!
+    assert len(context.bot.photos) == 0
 
 
 def test_handle_text_messages_for_sad_message(monkeypatch):
