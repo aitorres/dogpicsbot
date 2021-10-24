@@ -35,7 +35,9 @@ class MockDispatcher:
         on an instance level for further checks on tests.
         """
 
-        self.handler_names.append(handler.__name__)
+        self.handler_names.append(
+            str(handler.__class__)
+        )
 
 
 @dataclass
@@ -525,3 +527,38 @@ def test_bot_fails_without_telegram_bot_token_in_environment(
     monkeypatch.setenv("DPB_TG_TOKEN", "")
     with pytest.raises(RuntimeError, match="FATAL: No token was found."):
         DogPicsBot()
+
+
+def test_run_bot(
+    monkeypatch: pytest.MonkeyPatch
+):
+    """
+    Unit test to verify that all expected bot handlers are initialized
+    properly when calling the `run_bot` method.
+    """
+
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+
+    assert len(bot.dispatcher.handler_names) == 0
+    bot.run_bot()
+
+    # ? we're actually only checking that we got the right amount
+    # ? of handlers, and that their underlining classes are
+    # ? added in order; we might be able to actually check names or more
+    # ? information with either some introspection or attribute checks,
+    # ? but it might not be needed for now
+
+    assert len(bot.dispatcher.handler_names) == 5
+    assert bot.dispatcher.handler_names == [
+        # /start
+        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        # /help
+        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        # /dog
+        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        # text messages
+        "<class 'telegram.ext.messagehandler.MessageHandler'>",
+        # stickers
+        "<class 'telegram.ext.messagehandler.MessageHandler'>",
+    ]
