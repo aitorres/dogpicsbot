@@ -10,6 +10,7 @@ from typing import List, Optional, Tuple
 
 import pytest
 from bot import (
+    DOGS_API_BREED_LIST_URL,
     DOGS_API_DOG_PICTURE_URL,
     RANDOMFOX_API_URL,
     TELEGRAM_CHAT_TYPE_GROUP,
@@ -154,32 +155,28 @@ class MockResponse:
                 "message": "https://dog.pics/dog.png"
             }
 
-        if "breed" in self.url:
-            return {
-                "message": "https://dog.pics/specific-breed/dog.png"
-            }
-
         if self.url == RANDOMFOX_API_URL:
             return {
                 "image": "https://fox.pics/fox.png"
             }
 
+        if self.url == DOGS_API_BREED_LIST_URL:
+            return {
+                "message": {
+                    "pug": [],
+                    "collie": ["border"],
+                    "dalmatian": [],
+                }
+            }
+
+        if "breed" in self.url:
+            return {
+                "message": "https://dog.pics/specific-breed/dog.png"
+            }
+
         raise NotImplementedError(
             "Test case not yet covered in `MockResponse`"
         )
-
-
-def mock_fetch_breeds(bot_self: DogPicsBot):
-    """
-    Mock function that pretends to fetch the list of valid dog breeds,
-    using fixed test data instead.
-    """
-
-    bot_self.breeds = [
-        "border collie",
-        "pug",
-        "schnauzer",
-    ]
 
 
 def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
@@ -190,7 +187,6 @@ def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setenv("DPB_TG_TOKEN", "TEST_TOKEN_-_INVALID")
     monkeypatch.setattr("bot.Updater", MockUpdater)
-    monkeypatch.setattr("bot.DogPicsBot.fetch_breeds", mock_fetch_breeds)
     monkeypatch.setattr("requests.get", MockResponse)
     return DogPicsBot()
 

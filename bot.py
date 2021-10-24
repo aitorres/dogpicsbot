@@ -47,6 +47,7 @@ DOGS_API_DOG_PICTURE_URL: Final[str] = (
 DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: Final[str] = (
     "https://dog.ceo/api/breed/{0}/images/random"
 )
+DOGS_API_BREED_LIST_URL: Final[str] = "https://dog.ceo/api/breeds/list/all"
 
 RANDOMFOX_API_URL: Final[str] = "https://randomfox.ca/floof/"
 
@@ -131,10 +132,9 @@ class DogPicsBot:
         Fetches and stores in memory the list of searchable breeds.
         """
 
-        response = requests.get(url="https://dog.ceo/api/breeds/list/all")
+        response = requests.get(url=DOGS_API_BREED_LIST_URL)
         response_body = response.json()
-        breeds = list(response_body['message'])
-        self.breeds = breeds
+        self.breeds = list(response_body['message'])
 
     def run_bot(self):
         """
