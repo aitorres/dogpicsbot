@@ -38,12 +38,22 @@ Run the following command on a command line. It will keep the polling thread run
 python bot.py
 ```
 
+## Test
+
+Unit tests for the bot are found in the [tests.py](tests.py) file. You can run them after setting up your local environment with the following command:
+
+```bash
+pytest -v tests.py
+```
+
 ## What's next
 
 The next features to be developed are:
 
+- Let the dog detect and reply to images that contain dogs in them ([reference](https://towardsdatascience.com/a-dog-detector-and-breed-classifier-4feb99e1f852))
 - Replying "intelligently" to messages relating to dogs (e.g. emotions)
 - Explore the use of other dog pics APIs
+- Drop support for Python 3.7 and add support for Python 3.10
 - And more!
 
 ## Contributing
