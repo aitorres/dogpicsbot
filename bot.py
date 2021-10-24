@@ -114,14 +114,15 @@ class DogPicsBot:
             "triste",
         ]
 
-        self.fetch_breeds()
-
         # Stops runtime if the token has not been set
         if self.token is None:
             raise RuntimeError(
                 "FATAL: No token was found. "
                 "You might need to specify one or more environment variables."
             )
+
+        # Fetches list of dog breeds from the Dogs API
+        self.fetch_breeds()
 
         # Instantiates the bot updater and dispatcher
         self.updater = Updater(self.token, use_context=True)
