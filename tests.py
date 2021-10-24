@@ -81,6 +81,16 @@ def get_mock_context():
 
 
 # Code of actual tests
+def test_get_random_dog_sound(monkeypatch):
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+
+    # repeating the test several times
+    test_iterations = 10
+    for _ in range(test_iterations):
+        assert bot.get_random_dog_sound() in DogPicsBot.dog_sounds
+
+
 def test_show_help(monkeypatch):
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)

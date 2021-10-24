@@ -22,6 +22,14 @@ class DogPicsBot:
     Telegram bot.
     """
 
+    dog_sounds = [
+        "Woof woof!",
+        "Bark!",
+        "Awoooo!",
+        "Awroooo!",
+        "Bark bark!",
+    ]
+
     telegram_group = 'group'
     telegram_supergroup = 'supergroup'
 
@@ -141,28 +149,20 @@ class DogPicsBot:
         # Fires up the polling thread. We're live!
         self.updater.start_polling()
 
-    def get_dog_sound(self):
+    def get_random_dog_sound(self):
         """
         Randomly return a phrase similar to that of barking.
         """
 
-        SOUNDS = [
-            "Woof woof!",
-            "Bark!",
-            "Awoooo!",
-            "Awroooo!",
-            "Bark bark!",
-        ]
-
-        i = random.randint(0, len(SOUNDS) - 1)
-        return SOUNDS[i]
+        i = random.randint(0, len(DogPicsBot.dog_sounds) - 1)
+        return DogPicsBot.dog_sounds[i]
 
     def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
         """
 
-        HELP_MSG = f"{self.get_dog_sound()} " + \
+        HELP_MSG = f"{self.get_random_dog_sound()} " + \
                    "If you want a dog picture, send me a message " + \
                    "or use the /dog command."
         context.bot.send_message(chat_id=update.message.chat_id, text=HELP_MSG)
@@ -240,7 +240,7 @@ class DogPicsBot:
         if caption is not None:
             self.send_picture(update, context, image_url, caption)
         else:
-            self.send_picture(update, context, image_url, self.get_dog_sound())
+            self.send_picture(update, context, image_url, self.get_random_dog_sound())
 
 
     def send_fox_picture(self, update, context):
