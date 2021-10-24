@@ -19,4 +19,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run tests with pytest
-        run: pytest -sv tests.py
+        run: pytest --cov=. --cov-fail-under=80 -sv tests.py
