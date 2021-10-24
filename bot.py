@@ -186,10 +186,10 @@ class DogPicsBot:
         mentions_a_breed = breed is not None
 
         # Easter Egg Possibility: has a fox emoji
-        has_fox_emoji = any(x in words for x in self.fox_triggers)
+        has_fox_emoji = any(fox_trigger in words for fox_trigger in self.fox_triggers)
 
         # Possibility: received a sad message
-        is_sad_message = any(y for y in words for x in self.sad_triggers if y in x)
+        is_sad_message = any(sad_trigger in words for sad_trigger in self.sad_triggers)
 
         # Possibility: received message mentions dogs
         should_trigger_picture = False
