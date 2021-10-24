@@ -12,7 +12,7 @@ Every picture is fetched through the Dog API (https://dog.ceo/dog-api/).
 import logging
 import os
 import random
-from typing import Final, List
+from typing import List
 
 import requests
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
@@ -24,15 +24,15 @@ logging.basicConfig(
 )
 
 
-TELEGRAM_CHAT_TYPE_GROUP: Final[str] = "group"
-TELEGRAM_CHAT_TYPE_SUPERGROUP: Final[str] = "supergroup"
-TELEGRAM_GROUP_CHAT_TYPES: Final[List[str]] = [
+TELEGRAM_CHAT_TYPE_GROUP: str = "group"
+TELEGRAM_CHAT_TYPE_SUPERGROUP: str = "supergroup"
+TELEGRAM_GROUP_CHAT_TYPES: List[str] = [
     TELEGRAM_CHAT_TYPE_GROUP,
     TELEGRAM_CHAT_TYPE_SUPERGROUP,
 ]
 
 
-DOG_SOUNDS: Final[List[str]] = [
+DOG_SOUNDS: List[str] = [
     "Woof woof!",
     "Bark!",
     "Awoooo!",
@@ -41,15 +41,15 @@ DOG_SOUNDS: Final[List[str]] = [
 ]
 
 
-DOGS_API_DOG_PICTURE_URL: Final[str] = (
+DOGS_API_DOG_PICTURE_URL: str = (
     "https://dog.ceo/api/breeds/image/random"
 )
-DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: Final[str] = (
+DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: str = (
     "https://dog.ceo/api/breed/{0}/images/random"
 )
-DOGS_API_BREED_LIST_URL: Final[str] = "https://dog.ceo/api/breeds/list/all"
+DOGS_API_BREED_LIST_URL: str = "https://dog.ceo/api/breeds/list/all"
 
-RANDOMFOX_API_URL: Final[str] = "https://randomfox.ca/floof/"
+RANDOMFOX_API_URL: str = "https://randomfox.ca/floof/"
 
 
 class DogPicsBot:
