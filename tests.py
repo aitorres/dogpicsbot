@@ -9,7 +9,13 @@ from random import randint
 from typing import List, Optional, Tuple
 
 import pytest
-from bot import TELEGRAM_CHAT_TYPE_GROUP, DogPicsBot, DOG_SOUNDS
+from bot import (
+    DOGS_API_DOG_PICTURE_URL,
+    RANDOMFOX_API_URL,
+    TELEGRAM_CHAT_TYPE_GROUP,
+    DOG_SOUNDS,
+    DogPicsBot,
+)
 
 
 # Mocking Telegram's API
@@ -129,16 +135,63 @@ class MockContext:
     bot: MockContextBot
 
 
+@dataclass
+class MockResponse:
+    """
+    Mock class to use instead of `requests` own response, to
+    avoid making live requests during tests.
+    """
+
+    url: str
+
+    def json(self):
+        """
+        Return a dictionary with test data, depending on the instance url
+        """
+
+        if self.url == DOGS_API_DOG_PICTURE_URL:
+            return {
+                "message": "https://dog.pics/dog.png"
+            }
+
+        if "breed" in self.url:
+            return {
+                "message": "https://dog.pics/specific_breed/dog.png"
+            }
+
+        if self.url == RANDOMFOX_API_URL:
+            return {
+                "image": "https://fox.pics/fox.png"
+            }
+
+        raise NotImplementedError(
+            "Test case not yet covered in `MockResponse`"
+        )
+
+
+def mock_fetch_breeds(bot_self: DogPicsBot):
+    """
+    Mock function that pretends to fetch the list of valid dog breeds,
+    using fixed test data instead.
+    """
+
+    bot_self.breeds = [
+        "border collie",
+        "pug",
+        "schnauzer",
+    ]
+
+
 def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
     """
     Helper function that initializes and returns a mocked instance of the
     DogPicsBot class, that can be safely used for tests.
     """
 
-    # TODO: monkeypatch `requests` to avoid making live queries on tests
-
     monkeypatch.setenv("DPB_TG_TOKEN", "TEST_TOKEN_-_INVALID")
     monkeypatch.setattr("bot.Updater", MockUpdater)
+    monkeypatch.setattr("bot.DogPicsBot.fetch_breeds", mock_fetch_breeds)
+    monkeypatch.setattr("requests.get", MockResponse)
     return DogPicsBot()
 
 
@@ -247,9 +300,10 @@ def test_handle_text_messages_for_personal_message(
     assert len(context.bot.photos) == 1
 
     # contains the chat_id, original message id, photo url and caption
-    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
     assert chat_id == update.message.chat_id
     assert reply_to_message_id == update.message.message_id
+    assert photo_url == "https://dog.pics/dog.png"
     assert caption in DOG_SOUNDS
 
 
@@ -296,9 +350,10 @@ def test_handle_text_messages_for_group_message_with_dogs(
     assert len(context.bot.photos) == 1
 
     # contains the chat_id, original message id, photo url and caption
-    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
     assert chat_id == update.message.chat_id
     assert reply_to_message_id == update.message.message_id
+    assert photo_url == "https://dog.pics/dog.png"
     assert caption in DOG_SOUNDS
 
 
@@ -351,7 +406,8 @@ def test_handle_text_messages_for_sad_message(monkeypatch: pytest.MonkeyPatch):
     assert len(context.bot.photos) == 1
 
     # contains the chat_id, original message id, photo url and caption
-    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
     assert chat_id == update.message.chat_id
     assert reply_to_message_id == update.message.message_id
+    assert photo_url == "https://dog.pics/dog.png"
     assert caption == "Don't be sad, have a cute dog!"
