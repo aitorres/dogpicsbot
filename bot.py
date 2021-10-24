@@ -201,9 +201,13 @@ class DogPicsBot:
                 break
         mentions_a_breed = mentioned_breed is not None
 
-        # Easter Egg Possibility: has a fox emoji
-        has_fox_emoji = any(
-            fox_trigger in words for fox_trigger in self.fox_triggers
+        # Easter Egg Possibility: has a fox emoji or word
+        has_fox_reference = any(
+            any(
+                word.startswith(fox_trigger)
+                for word in words
+            )
+            for fox_trigger in self.fox_triggers
         )
 
         # Possibility: received a sad message
@@ -212,18 +216,19 @@ class DogPicsBot:
         )
 
         # Possibility: received message mentions dogs
-        should_trigger_picture = False
-        for dog_trigger in self.dog_triggers:
-            for word in words:
-                if word.startswith(dog_trigger):
-                    should_trigger_picture = True
-                    break
+        should_trigger_picture = any(
+            any(
+                word.startswith(dog_trigger)
+                for word in words
+            )
+            for dog_trigger in self.dog_triggers
+        )
 
         # Possibility: it's a personal chat message
         chat_type = update.message.chat.type
         is_personal_chat = chat_type not in TELEGRAM_GROUP_CHAT_TYPES
 
-        if has_fox_emoji:
+        if has_fox_reference:
             self.send_fox_picture(update, context)
         elif is_sad_message:
             sad_caption = "Don't be sad, have a cute dog!"
