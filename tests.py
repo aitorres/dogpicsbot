@@ -268,17 +268,17 @@ def test_show_help(monkeypatch: pytest.MonkeyPatch):
     assert expected_message in sent_message
 
 
-def test_handle_text_messages_for_personal_message(
+def test_handle_text_messages_for_private_message(
     monkeypatch: pytest.MonkeyPatch
 ):
     """
     Unit test to make sure that the bot always replies with a dog picture
-    if messaged on a personal (non-group) chat
+    if messaged on a private (non-group) chat
     """
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(chat_type="personal")
+    update = get_mock_update(chat_type="private")
     context = get_mock_context()
 
     # context is empty of sent photos
