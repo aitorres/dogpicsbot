@@ -22,6 +22,7 @@ class DogPicsBot:
     Telegram bot.
     """
 
+    # TODO: why are some class variables and other instance variables?
     dog_sounds = [
         "Woof woof!",
         "Bark!",
@@ -89,7 +90,7 @@ class DogPicsBot:
             "miserable",
             "down",
             "downhearted",
-            'triste',
+            "triste",
         ]
 
         self.fetch_breeds()

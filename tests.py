@@ -1,5 +1,6 @@
 import pytest
 from dataclasses import dataclass, field
+from random import randint
 from typing import List, Optional, Tuple
 
 from bot import DogPicsBot
@@ -51,8 +52,14 @@ class MockContextBot:
     # tuple of (intended_chat_id, sent_message)
     messages: List[Tuple[int, str]] = field(default_factory=list)
 
+    # tuple of (intended_chat_id, intented_reply_to_message_id, photo, caption)
+    photos: List[Tuple[int, int, str, str]] = field(default_factory=list)
+
     def send_message(self, chat_id, text):
         self.messages.append((chat_id, text))
+
+    def send_photo(self, chat_id, reply_to_message_id, photo, caption):
+        self.photos.append((chat_id, reply_to_message_id, photo, caption))
 
 @dataclass
 class MockContext:
@@ -119,3 +126,49 @@ def test_show_help(monkeypatch):
     # the tuple contains the chat_id and the message, we only care about the message on this test
     _, sent_message = context.bot.messages[0]
     assert "If you want a dog picture, send me a message or use the /dog command." in sent_message
+
+
+def test_handle_text_messages(monkeypatch):
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(
+        chat_id=randint(0, 10000), message_id=randint(0, 10000),
+    )
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # one picture sent through context
+    assert len(context.bot.photos) == 1
+
+    # the tuple contains the chat_id, original message id, photo url (ignored) and caption
+    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    assert chat_id == update.message.chat_id
+    assert reply_to_message_id == update.message.message_id
+    assert caption in DogPicsBot.dog_sounds
+
+
+def test_handle_text_messages_for_sad_message(monkeypatch):
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(
+        chat_id=randint(0, 10000), message_id=randint(0, 10000), message="sad :("
+    )
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # one picture sent through context
+    assert len(context.bot.photos) == 1
+
+    # the tuple contains the chat_id, original message id, photo url (ignored) and caption
+    chat_id, reply_to_message_id, _, caption = context.bot.photos[0]
+    assert chat_id == update.message.chat_id
+    assert reply_to_message_id == update.message.message_id
+    assert caption == "Don't be sad, have a cute dog!"
