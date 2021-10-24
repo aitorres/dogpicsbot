@@ -206,7 +206,7 @@ class DogPicsBot:
             self.send_fox_picture(update, context)
         elif is_sad_message:
             self.send_dog_picture(update, context, breed, "Don't be sad, have a cute dog!")
-        elif any(should_trigger_picture, is_personal_chat, mentions_a_breed):
+        elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
             self.send_dog_picture(update, context, breed)
 
     def handle_stickers(self, update, context):
@@ -217,7 +217,7 @@ class DogPicsBot:
 
         has_sticker = update.message.sticker is not None
         has_emoji_sticker = has_sticker and update.message.sticker.emoji is not None
-        has_dog_sticker = has_emoji_sticker and any([e in update.message.sticker.emoji for e in self.dog_emojis])
+        has_dog_sticker = has_emoji_sticker and any(e in update.message.sticker.emoji for e in self.dog_emojis)
 
         if has_dog_sticker:
             self.send_dog_picture(update, context)
