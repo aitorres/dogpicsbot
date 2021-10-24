@@ -35,8 +35,9 @@ class MockSticker:
 @dataclass
 class MockMessage:
     text: str
-    chat_id: int = 1234
-    message_id: int = 5678
+    chat_id: int
+    message_id: int
+    chat: MockChat
     sticker: Optional[MockSticker] = None
 
 
@@ -65,14 +66,24 @@ def get_mock_bot(monkeypatch):
 
 
 def get_mock_update(
-    message="This is a message", type="group", is_sticker=False, emoji=None
+    message="This is a message",
+    type="group",
+    chat_id=1234,
+    message_id=5678,
+    is_sticker=False,
+    emoji=None,
 ):
+    chat = MockChat(type=type)
+
     return MockUpdate(
         message=MockMessage(
+            chat_id=chat_id,
+            chat=chat,
+            message_id=message_id,
             text=message,
             sticker=MockSticker(emoji=emoji) if is_sticker else None,
         ),
-        chat=MockChat(type=type)
+        chat=chat,
     )
 
 
