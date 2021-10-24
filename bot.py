@@ -204,7 +204,7 @@ class DogPicsBot:
         if has_fox_emoji:
             self.send_fox_picture(update, context)
         elif is_sad_message:
-            self.send_dog_picture(update, context, breed, "Don't be sad, here is a cute dog!")
+            self.send_dog_picture(update, context, breed, "Don't be sad, have a cute dog!")
         elif any(should_trigger_picture, is_personal_chat, mentions_a_breed):
             self.send_dog_picture(update, context, breed)
 
