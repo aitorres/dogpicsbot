@@ -313,6 +313,7 @@ def test_handle_text_messages_for_private_message(
         "look! a! doggo!",
         "puppy!",
         "woof!",
+        "pooch!"
     ]
 )
 def test_handle_text_messages_for_group_message_with_dogs(
@@ -376,7 +377,13 @@ def test_handle_text_messages_for_group_message_without_dogs(
         "sad",
         "i'm really sad right now",
         "😢",
+        "😭😓",
+        "She left me 💔",
+        "I'm not gonna make it 😞"
         "mano, estoy triste",
+        "estoy despechado",
+        "ando deprimido",
+        "tengo tusa",
     ]
 )
 def test_handle_text_messages_for_sad_message(
@@ -483,6 +490,7 @@ def test_handle_text_messages_for_dog_sticker(
         "foxes are the best",
         "i saw a fennec the other day",
         "do you have a fox?",
+        "mira un zorro!"
     ]
 )
 def test_handle_text_messages_for_fox_reference(

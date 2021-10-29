@@ -84,6 +84,7 @@ class DogPicsBot:
             "dog",
             "perr",
             "lomito",
+            "pooch",
         ] + self.dog_emojis
 
         # Just like dog triggers, these will be checked against
@@ -97,11 +98,23 @@ class DogPicsBot:
         ]
 
         # Same as earlier triggers, but for sad messages
+        self.sad_spanish_triggers = [
+            "triste",
+            "afligido",
+            "lloro",
+            "deprimido",
+            "tusa",
+            "despech", # despechado, despechada, despecho
+        ]
+
         self.sad_triggers = [
             "😔",
+            "😞",
             "😢",
             "😭",
             "😓",
+            "😫",
+            "💔",
             "sad",
             "not good",
             "unhappy",
@@ -109,8 +122,7 @@ class DogPicsBot:
             "miserable",
             "down",
             "downhearted",
-            "triste",
-        ]
+        ] + self.sad_spanish_triggers
 
         # This environment variable should be set before using the bot
         self.token = os.environ.get("DPB_TG_TOKEN", "")
@@ -214,7 +226,11 @@ class DogPicsBot:
 
         # Possibility: received a sad message
         is_sad_message = any(
-            sad_trigger in words for sad_trigger in self.sad_triggers
+            any(
+                word.startswith(sad_trigger)
+                for word in words
+            )
+            for sad_trigger in self.sad_triggers
         )
 
         # Possibility: received message mentions dogs
