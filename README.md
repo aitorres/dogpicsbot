@@ -40,10 +40,10 @@ python bot.py
 
 ## Test
 
-Unit tests for the bot are found in the [tests.py](tests.py) file. You can run them after setting up your local environment with the following command:
+Unit tests for the bot are found in the [tests.py](tests.py) file. You can run them with verbose output after setting up your local environment, including the 80% coverage check that is expected of the repository, with the following command:
 
 ```bash
-pytest -v tests.py
+pytest -v --cov=. --cov-fail-under=80 tests.py
 ```
 
 ## What's next
@@ -59,6 +59,8 @@ The next features to be developed are:
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+All contributions that involve changing the codebase should either include or update [tests](tests.py), and make sure that all tests pass before changes can be merged to the `master` branch.
 
 ## License
 
