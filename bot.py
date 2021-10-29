@@ -38,6 +38,7 @@ DOG_SOUNDS: List[str] = [
     "Awoooo!",
     "Awroooo!",
     "Bark bark!",
+    "Grrr!",
 ]
 
 
