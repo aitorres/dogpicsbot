@@ -15,6 +15,7 @@ from bot import (
     RANDOMFOX_API_URL,
     TELEGRAM_CHAT_TYPE_GROUP,
     DOG_SOUNDS,
+    FOX_SOUNDS,
     DogPicsBot,
 )
 
@@ -512,7 +513,7 @@ def test_handle_text_messages_for_fox_reference(
     assert chat_id == update.message.chat_id
     assert reply_to_message_id == update.message.message_id
     assert photo_url == "https://fox.pics/fox.png"
-    assert caption == "Yip yip!"
+    assert caption in FOX_SOUNDS
 
 
 def test_bot_fails_without_telegram_bot_token_in_environment(

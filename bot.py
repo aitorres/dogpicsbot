@@ -38,6 +38,20 @@ DOG_SOUNDS: List[str] = [
     "Awoooo!",
     "Awroooo!",
     "Bark bark!",
+    "Grrr!",
+]
+
+FOX_SOUNDS: List[str] = [
+    "Grrr!",
+    "Yip Yip!",
+    "Ring-ding-ding-ding-dingeringeding!",
+    "Wa-pa-pa-pa-pa-pa-pow!",
+    "Hatee-hatee-hatee-ho!",
+    "Joff-tchoff-tchoffo-tchoffo-tchoff!",
+    "Jacha-chacha-chacha-chow!",
+    "Fraka-kaka-kaka-kaka-kow!",
+    "A-hee-ahee ha-hee!",
+    "A-oo-oo-oo-ooo!",
 ]
 
 
@@ -176,6 +190,14 @@ class DogPicsBot:
         i = random.randint(0, len(DOG_SOUNDS) - 1)
         return DOG_SOUNDS[i]
 
+    def get_random_fox_sound(self):
+        """
+        Randomly return a phrase similar to that of Ding-ding-ding-ding.
+        """
+
+        i = random.randint(0, len(FOX_SOUNDS) - 1)
+        return FOX_SOUNDS[i]
+
     def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
@@ -292,7 +314,7 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body['image']
 
-        self.send_picture(update, context, image_url, "Yip yip!")
+        self.send_picture(update, context, image_url, self.get_random_fox_sound())
 
     def send_picture(self, update, context, image_url, caption):
         """
