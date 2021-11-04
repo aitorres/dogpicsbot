@@ -217,15 +217,7 @@ class DogPicsBot:
         logging.debug("Received message: %s", update.message.text)
         logging.debug("Splitted words: %s", ", ".join(words))
 
-        # Possibility: received message mentions a specific breed
-        mentioned_breed = None
-        for breed in self.breeds:
-            if breed in words:
-                mentioned_breed = breed
-                break
-        mentions_a_breed = mentioned_breed is not None
-
-        # Easter Egg Possibility: has a fox emoji or word
+        # Possibility: has a fox emoji or word
         has_fox_reference = any(
             any(
                 word.startswith(fox_trigger)
@@ -234,10 +226,27 @@ class DogPicsBot:
             for fox_trigger in self.fox_triggers
         )
 
+        if has_fox_reference:
+            return self.send_fox_picture(update, context)
+
+        # Possibility: received message mentions a specific breed
+        mentioned_breed = None
+        for breed in self.breeds:
+            if breed in words:
+                mentioned_breed = breed
+                break
+        mentions_a_breed = mentioned_breed is not None
+
         # Possibility: received a sad message
         is_sad_message = any(
-            sad_trigger in words for sad_trigger in self.sad_triggers
+            word for word in words for sad_trigger in self.sad_triggers if word in sad_trigger
         )
+
+        if is_sad_message:
+            sad_caption = "Don't be sad, have a cute dog!"
+            return self.send_dog_picture(
+                update, context, mentioned_breed, sad_caption
+            )
 
         # Possibility: received message mentions dogs
         should_trigger_picture = any(
@@ -252,15 +261,18 @@ class DogPicsBot:
         chat_type = update.message.chat.type
         is_personal_chat = chat_type not in TELEGRAM_GROUP_CHAT_TYPES
 
-        if has_fox_reference:
-            self.send_fox_picture(update, context)
-        elif is_sad_message:
-            sad_caption = "Don't be sad, have a cute dog!"
-            self.send_dog_picture(
-                update, context, mentioned_breed, sad_caption
-            )
-        elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
-            self.send_dog_picture(update, context, mentioned_breed)
+        if any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
+            return self.send_dog_picture(update, context, mentioned_breed)
+
+        # if has_fox_reference:
+        #     self.send_fox_picture(update, context)
+        # elif is_sad_message:
+        #     sad_caption = "Don't be sad, have a cute dog!"
+        #     self.send_dog_picture(
+        #         update, context, mentioned_breed, sad_caption
+        #     )
+        # elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
+        #     self.send_dog_picture(update, context, mentioned_breed)
 
     def handle_stickers(self, update, context):
         """
