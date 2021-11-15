@@ -242,6 +242,21 @@ def test_get_random_dog_sound(monkeypatch: pytest.MonkeyPatch):
         assert bot.get_random_dog_sound() in DOG_SOUNDS
 
 
+def test_get_random_fox_sound(monkeypatch: pytest.MonkeyPatch):
+    """
+    Unit test to verify that the bot is able to generate a random
+    caption if needed.
+    """
+
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+
+    # repeating the test several times
+    test_iterations = max(len(FOX_SOUNDS) * 5, 25)
+    for _ in range(test_iterations):
+        assert bot.get_random_fox_sound() in FOX_SOUNDS
+
+
 def test_show_help(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot is sending the proper help information

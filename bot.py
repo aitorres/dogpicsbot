@@ -187,16 +187,14 @@ class DogPicsBot:
         Randomly return a phrase similar to that of barking.
         """
 
-        i = random.randint(0, len(DOG_SOUNDS) - 1)
-        return DOG_SOUNDS[i]
+        return random.choice(DOG_SOUNDS)
 
     def get_random_fox_sound(self):
         """
         Randomly return a phrase similar to that of Ding-ding-ding-ding.
         """
 
-        i = random.randint(0, len(FOX_SOUNDS) - 1)
-        return FOX_SOUNDS[i]
+        return random.choice(FOX_SOUNDS)
 
     def show_help(self, update, context):
         """
