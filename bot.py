@@ -66,6 +66,20 @@ DOGS_API_BREED_LIST_URL: str = "https://dog.ceo/api/breeds/list/all"
 RANDOMFOX_API_URL: str = "https://randomfox.ca/floof/"
 
 
+# src: https://gist.github.com/bcnzer/2e1e392e355dc95b7f3da98a0b2ade9d
+WOLF_PICTURES: List[str] = [
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf1.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf2.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf3.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf4.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf5.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf6.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf7.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf8.png",
+    "https://wolftracker9eee.blob.core.windows.net/wolfpictures-mock/wolf9.png",
+]
+
+
 class DogPicsBot:
     """
     A class to encapsulate all relevant methods of the Dog Pics
@@ -124,6 +138,16 @@ class DogPicsBot:
             "down",
             "downhearted",
             "triste",
+        ]
+
+        # And again, for wolves. I promise this is the last animal to be
+        # introduced to the bot.
+        self.wolf_triggers = [
+            "🐺",
+            "lobo",
+            "wolf",
+            "wolves",
+            "howl",
         ]
 
         # This environment variable should be set before using the bot
@@ -196,6 +220,13 @@ class DogPicsBot:
 
         return random.choice(FOX_SOUNDS)
 
+    def get_random_wolf_picture(self):
+        """
+        Randomly return a link to a wolf's picture.
+        """
+
+        return random.choice(WOLF_PICTURES)
+
     def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
@@ -232,6 +263,15 @@ class DogPicsBot:
             for fox_trigger in self.fox_triggers
         )
 
+        # Easter Egg Possibility: has a wolf emoji or word
+        has_wolf_reference = any(
+            any(
+                word.startswith(wolf_trigger)
+                for word in words
+            )
+            for wolf_trigger in self.wolf_triggers
+        )
+
         # Possibility: received a sad message
         is_sad_message = any(
             sad_trigger in words for sad_trigger in self.sad_triggers
@@ -252,6 +292,8 @@ class DogPicsBot:
 
         if has_fox_reference:
             self.send_fox_picture(update, context)
+        elif has_wolf_reference:
+            self.send_wolf_picture(update, context)
         elif is_sad_message:
             sad_caption = "Don't be sad, have a cute dog!"
             self.send_dog_picture(
@@ -312,7 +354,21 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body['image']
 
-        self.send_picture(update, context, image_url, self.get_random_fox_sound())
+        self.send_picture(
+            update, context, image_url, self.get_random_fox_sound()
+        )
+
+    def send_wolf_picture(self, update, context):
+        """
+        Retrieves a random wolf pic URL from the static list and sends the
+        given wolf picture as a photo message on Telegram.
+        """
+
+        image_url = self.get_random_wolf_picture()
+
+        self.send_picture(
+            update, context, image_url, "Howl!"
+        )
 
     def send_picture(self, update, context, image_url, caption):
         """

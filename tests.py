@@ -16,6 +16,7 @@ from bot import (
     TELEGRAM_CHAT_TYPE_GROUP,
     DOG_SOUNDS,
     FOX_SOUNDS,
+    WOLF_PICTURES,
     DogPicsBot,
 )
 
@@ -255,6 +256,21 @@ def test_get_random_fox_sound(monkeypatch: pytest.MonkeyPatch):
     test_iterations = max(len(FOX_SOUNDS) * 5, 25)
     for _ in range(test_iterations):
         assert bot.get_random_fox_sound() in FOX_SOUNDS
+
+
+def test_get_random_wolf_picture(monkeypatch: pytest.MonkeyPatch):
+    """
+    Unit test to verify that the bot is able to generate a random
+    wolf picture if needed.
+    """
+
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+
+    # repeating the test several times
+    test_iterations = max(len(WOLF_PICTURES) * 5, 25)
+    for _ in range(test_iterations):
+        assert bot.get_random_wolf_picture() in WOLF_PICTURES
 
 
 def test_show_help(monkeypatch: pytest.MonkeyPatch):
@@ -529,6 +545,47 @@ def test_handle_text_messages_for_fox_reference(
     assert reply_to_message_id == update.message.message_id
     assert photo_url == "https://fox.pics/fox.png"
     assert caption in FOX_SOUNDS
+
+
+@pytest.mark.parametrize(
+    "wolf_message",
+    [
+        "🐺",
+        "me gusta mucho este animal 🐺",
+        "wolves are the best",
+        "is that a wolf?",
+        "¡mira un lobo!",
+        "howl howl howl!",
+    ]
+)
+def test_handle_text_messages_for_wolf_reference(
+    monkeypatch: pytest.MonkeyPatch, wolf_message: str
+):
+    """
+    Unit test to verify that, in the presence of a message with a wolf
+    reference, the bot replies with a random wolf picture and a specific
+    caption.
+    """
+
+    # instantiating mock bot
+    bot = get_mock_bot(monkeypatch)
+    update = get_mock_update(message=wolf_message)
+    context = get_mock_context()
+
+    # context is empty of sent photos
+    assert len(context.bot.photos) == 0
+
+    bot.handle_text_messages(update, context)
+
+    # one picture sent through context
+    assert len(context.bot.photos) == 1
+
+    # contains the chat_id, original message id, photo url and caption
+    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
+    assert chat_id == update.message.chat_id
+    assert reply_to_message_id == update.message.message_id
+    assert photo_url in WOLF_PICTURES
+    assert caption == "Howl!"
 
 
 def test_bot_fails_without_telegram_bot_token_in_environment(
