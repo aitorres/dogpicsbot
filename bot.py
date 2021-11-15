@@ -112,6 +112,7 @@ class DogPicsBot:
             "dog",
             "perr",
             "lomito",
+            "pooch",
         ] + self.dog_emojis
 
         # Just like dog triggers, these will be checked against
@@ -125,11 +126,23 @@ class DogPicsBot:
         ]
 
         # Same as earlier triggers, but for sad messages
+        self.sad_spanish_triggers = [
+            "triste",
+            "afligido",
+            "lloro",
+            "deprimido",
+            "tusa",
+            "despech", # despechado, despechada, despecho
+        ]
+
         self.sad_triggers = [
             "😔",
+            "😞",
             "😢",
             "😭",
             "😓",
+            "😫",
+            "💔",
             "sad",
             "not good",
             "unhappy",
@@ -137,8 +150,7 @@ class DogPicsBot:
             "miserable",
             "down",
             "downhearted",
-            "triste",
-        ]
+        ] + self.sad_spanish_triggers
 
         # And again, for wolves. I promise this is the last animal to be
         # introduced to the bot.
@@ -274,7 +286,11 @@ class DogPicsBot:
 
         # Possibility: received a sad message
         is_sad_message = any(
-            sad_trigger in words for sad_trigger in self.sad_triggers
+            any(
+                word.startswith(sad_trigger)
+                for word in words
+            )
+            for sad_trigger in self.sad_triggers
         )
 
         # Possibility: received message mentions dogs
