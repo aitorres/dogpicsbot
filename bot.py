@@ -258,12 +258,27 @@ class DogPicsBot:
         logging.debug("Received message: %s", update.message.text)
         logging.debug("Splitted words: %s", ", ".join(words))
 
+        def get_mentioned_breed(breeds, words):
+            """
+            Given a list of breeds and a list of words,
+            checks if any breed appears within the list of words
+            and returns the first successful case if so
+            """
+
+            for breed in breeds:
+                # the breed might be directly mentioned
+                if breed in words:
+                    return breed
+
+                # or it can be a substring (like)
+                for word in words:
+                    if breed in word:
+                        return breed
+
+            return None
+
         # Possibility: received message mentions a specific breed
-        mentioned_breed = None
-        for breed in self.breeds:
-            if breed in words:
-                mentioned_breed = breed
-                break
+        mentioned_breed = get_mentioned_breed(self.breeds, words)
         mentions_a_breed = mentioned_breed is not None
 
         # Easter Egg Possibility: has a fox emoji or word
