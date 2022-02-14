@@ -447,8 +447,16 @@ def test_handle_text_messages_for_sad_message(
     assert caption == "Don't be sad, have a cute dog!"
 
 
+@pytest.mark.parametrize(
+    "msg",
+    [
+        "i have a pug at home",
+        "i have two pugs at home",
+        "this is pugtastic!",
+    ]
+)
 def test_handle_text_messages_for_breed_message(
-    monkeypatch: pytest.MonkeyPatch
+    monkeypatch: pytest.MonkeyPatch, msg: str
 ):
     """
     Unit test to verify that, in the presence of a breed name within a
@@ -457,7 +465,7 @@ def test_handle_text_messages_for_breed_message(
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(message="i have a pug at home")
+    update = get_mock_update(message=msg)
     context = get_mock_context()
 
     # context is empty of sent photos
