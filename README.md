@@ -43,7 +43,7 @@ python bot.py
 Unit tests for the bot are found in the [tests.py](tests.py) file. You can run them with verbose output after setting up your local environment, including the 80% coverage check that is expected of the repository, with the following command:
 
 ```bash
-pytest -v --cov=. --cov-fail-under=80 tests.py
+pytest
 ```
 
 ## What's next

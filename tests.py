@@ -148,6 +148,7 @@ class MockResponse:
     """
 
     url: str
+    timeout: int
 
     def json(self):
         """
