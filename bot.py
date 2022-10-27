@@ -86,6 +86,8 @@ class DogPicsBot:
     Telegram bot.
     """
 
+    REQUESTS_TIMEOUT = 10 # in seconds
+
     def __init__(self):
         """
         Constructor of the class. Initializes certain instance variables
@@ -184,7 +186,7 @@ class DogPicsBot:
         Fetches and stores in memory the list of searchable breeds.
         """
 
-        response = requests.get(url=DOGS_API_BREED_LIST_URL)
+        response = requests.get(url=DOGS_API_BREED_LIST_URL, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
         self.breeds = list(response_body['message'])
 
@@ -363,7 +365,7 @@ class DogPicsBot:
         )
 
         # Fetches a dog picture URL from the Dog API
-        response = requests.get(url=url)
+        response = requests.get(url=url, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
         image_url = response_body['message']
 
@@ -381,7 +383,7 @@ class DogPicsBot:
         """
 
         # Fetches a dog picture URL from the Dog API
-        response = requests.get(url=RANDOMFOX_API_URL)
+        response = requests.get(url=RANDOMFOX_API_URL, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
         image_url = response_body['image']
 
@@ -416,6 +418,6 @@ class DogPicsBot:
 
 
 # If the script is run directly, fires the main procedure
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     bot = DogPicsBot()
     bot.run_bot()
