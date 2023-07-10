@@ -8,7 +8,7 @@ Currently on [v1.6.3](https://github.com/aitorres/dogpicsbot/releases/tag/v1.6.3
 
 ## Requirements
 
-The bot runs on **Python 3** (officially supporting Python 3.7, 3.8 and 3.9), and depends on packages listed on the `requirements.txt` file.
+The bot runs on **Python 3** (officially supporting Python 3.8 to 3.11), and depends on packages listed on the `requirements.txt` file.
 
 For ease of use, you should create a Python 3 virtual environment and then use `pip` in order to install the requirements, with the following command:
 
