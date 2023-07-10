@@ -50,7 +50,7 @@ class MockUpdater:
 
     token: str
     use_context: bool = True
-    dispatcher: MockDispatcher = MockDispatcher()
+    dispatcher: MockDispatcher = field(default_factory=MockDispatcher)
 
     def start_polling(self):
         """
