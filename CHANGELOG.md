@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add support for Python 3.12
 - Environment variables can now be managed via `.env` files using `dotenv`
 - Improve developer experience with `pre-commit`, `isort`, and other linting hooks
 - Add auto-release action on CI/CD
