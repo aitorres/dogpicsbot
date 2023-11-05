@@ -9,13 +9,14 @@ from random import randint
 from typing import List, Optional, Tuple
 
 import pytest
+
 from bot import (
+    DOG_SOUNDS,
     DOGS_API_BREED_LIST_URL,
     DOGS_API_DOG_PICTURE_URL,
+    FOX_SOUNDS,
     RANDOMFOX_API_URL,
     TELEGRAM_CHAT_TYPE_GROUP,
-    DOG_SOUNDS,
-    FOX_SOUNDS,
     WOLF_PICTURES,
     DogPicsBot,
 )
@@ -23,12 +24,36 @@ from bot import (
 
 # Mocking Telegram's API
 @dataclass
-class MockDispatcher:
+class MockApplication:
     """
-    Mock class to bypass Telegram's dispatcher on tests.
+    Mock class to bypass Telegram's application on tests.
     """
 
+    _token: str = ""
     handler_names: List[str] = field(default_factory=list)
+
+    def build(self):
+        """
+        Fakes the process in which a Telegram bot is built.
+        """
+
+        return self
+
+    def token(self, _token: str):
+        """
+        Fakes the process in which a Telegram bot's token is set.
+        """
+
+        self._token = _token
+        return self
+
+    @staticmethod
+    def builder():
+        """
+        Fakes the process in which a Telegram bot's builder is set.
+        """
+
+        return MockApplication()
 
     def add_handler(self, handler):
         """
@@ -37,24 +62,11 @@ class MockDispatcher:
         on an instance level for further checks on tests.
         """
 
-        self.handler_names.append(
-            str(handler.__class__)
-        )
+        self.handler_names.append(str(handler.__class__))
 
-
-@dataclass
-class MockUpdater:
-    """
-    Mock class to bypass Telegram's updater on tests.
-    """
-
-    token: str
-    use_context: bool = True
-    dispatcher: MockDispatcher = field(default_factory=MockDispatcher)
-
-    def start_polling(self):
+    def run_polling(self):
         """
-        Fakes the call to Telegram's updater's start_polling, but in reality
+        Fakes the call to Telegram's application's start_polling, but in reality
         does nothing.
         """
         return
@@ -156,14 +168,10 @@ class MockResponse:
         """
 
         if self.url == DOGS_API_DOG_PICTURE_URL:
-            return {
-                "message": "https://dog.pics/dog.png"
-            }
+            return {"message": "https://dog.pics/dog.png"}
 
         if self.url == RANDOMFOX_API_URL:
-            return {
-                "image": "https://fox.pics/fox.png"
-            }
+            return {"image": "https://fox.pics/fox.png"}
 
         if self.url == DOGS_API_BREED_LIST_URL:
             return {
@@ -175,13 +183,9 @@ class MockResponse:
             }
 
         if "breed" in self.url:
-            return {
-                "message": "https://dog.pics/specific-breed/dog.png"
-            }
+            return {"message": "https://dog.pics/specific-breed/dog.png"}
 
-        raise NotImplementedError(
-            "Test case not yet covered in `MockResponse`"
-        )
+        raise NotImplementedError("Test case not yet covered in `MockResponse`")
 
 
 def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
@@ -191,7 +195,7 @@ def get_mock_bot(monkeypatch: pytest.MonkeyPatch):
     """
 
     monkeypatch.setenv("DPB_TG_TOKEN", "TEST_TOKEN_-_INVALID")
-    monkeypatch.setattr("bot.Updater", MockUpdater)
+    monkeypatch.setattr("bot.Application", MockApplication)
     monkeypatch.setattr("requests.get", MockResponse)
     return DogPicsBot()
 
@@ -229,7 +233,7 @@ def get_mock_context():
 
 
 # Code of actual tests
-def test_get_random_dog_sound(monkeypatch: pytest.MonkeyPatch):
+async def test_get_random_dog_sound(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot is able to generate a random
     caption if needed.
@@ -244,7 +248,7 @@ def test_get_random_dog_sound(monkeypatch: pytest.MonkeyPatch):
         assert bot.get_random_dog_sound() in DOG_SOUNDS
 
 
-def test_get_random_fox_sound(monkeypatch: pytest.MonkeyPatch):
+async def test_get_random_fox_sound(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot is able to generate a random
     caption if needed.
@@ -259,7 +263,7 @@ def test_get_random_fox_sound(monkeypatch: pytest.MonkeyPatch):
         assert bot.get_random_fox_sound() in FOX_SOUNDS
 
 
-def test_get_random_wolf_picture(monkeypatch: pytest.MonkeyPatch):
+async def test_get_random_wolf_picture(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot is able to generate a random
     wolf picture if needed.
@@ -274,7 +278,7 @@ def test_get_random_wolf_picture(monkeypatch: pytest.MonkeyPatch):
         assert bot.get_random_wolf_picture() in WOLF_PICTURES
 
 
-def test_show_help(monkeypatch: pytest.MonkeyPatch):
+async def test_show_help(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot is sending the proper help information
     when needed.
@@ -288,7 +292,7 @@ def test_show_help(monkeypatch: pytest.MonkeyPatch):
     # context is empty
     assert len(context.bot.messages) == 0
 
-    bot.show_help(update, context)
+    await bot.show_help(update, context)
 
     # one message sent through context
     assert len(context.bot.messages) == 1
@@ -296,16 +300,11 @@ def test_show_help(monkeypatch: pytest.MonkeyPatch):
     # the tuple contains the chat_id and the message, we only care about
     # the message on this test
     _, sent_message = context.bot.messages[0]
-    expected_message = (
-        "If you want a dog picture, send me a message or "
-        "use the /dog command."
-    )
+    expected_message = "If you want a dog picture, send me a message or use the /dog command."
     assert expected_message in sent_message
 
 
-def test_handle_text_messages_for_private_message(
-    monkeypatch: pytest.MonkeyPatch
-):
+async def test_handle_text_messages_for_private_message(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to make sure that the bot always replies with a dog picture
     if messaged on a private (non-group) chat
@@ -319,7 +318,7 @@ def test_handle_text_messages_for_private_message(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -346,10 +345,10 @@ def test_handle_text_messages_for_private_message(
         "look! a! doggo!",
         "puppy!",
         "woof!",
-        "pooch!"
-    ]
+        "pooch!",
+    ],
 )
-def test_handle_text_messages_for_group_message_with_dogs(
+async def test_handle_text_messages_for_group_message_with_dogs(
     monkeypatch: pytest.MonkeyPatch, dog_message: str
 ):
     """
@@ -359,15 +358,13 @@ def test_handle_text_messages_for_group_message_with_dogs(
 
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(
-        chat_type=TELEGRAM_CHAT_TYPE_GROUP, message=dog_message
-    )
+    update = get_mock_update(chat_type=TELEGRAM_CHAT_TYPE_GROUP, message=dog_message)
     context = get_mock_context()
 
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -380,9 +377,7 @@ def test_handle_text_messages_for_group_message_with_dogs(
     assert caption in DOG_SOUNDS
 
 
-def test_handle_text_messages_for_group_message_without_dogs(
-    monkeypatch: pytest.MonkeyPatch
-):
+async def test_handle_text_messages_for_group_message_without_dogs(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot does not send a dog picture if
     a message sent to a group chat doesn't contain a dog reference.
@@ -391,14 +386,15 @@ def test_handle_text_messages_for_group_message_without_dogs(
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
     update = get_mock_update(
-        chat_type=TELEGRAM_CHAT_TYPE_GROUP, message="I really like plants",
+        chat_type=TELEGRAM_CHAT_TYPE_GROUP,
+        message="I really like plants",
     )
     context = get_mock_context()
 
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # context is still empty!
     assert len(context.bot.photos) == 0
@@ -412,14 +408,14 @@ def test_handle_text_messages_for_group_message_without_dogs(
         "😢",
         "😭😓",
         "She left me 💔",
-        "I'm not gonna make it 😞"
+        "I'm not gonna make it 😞",
         "mano, estoy triste",
         "estoy despechado",
         "ando deprimido",
         "tengo tusa",
-    ]
+    ],
 )
-def test_handle_text_messages_for_sad_message(
+async def test_handle_text_messages_for_sad_message(
     monkeypatch: pytest.MonkeyPatch, sad_message: str
 ):
     """
@@ -435,7 +431,7 @@ def test_handle_text_messages_for_sad_message(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -454,11 +450,9 @@ def test_handle_text_messages_for_sad_message(
         "i have a pug at home",
         "i have two pugs at home",
         "this is pugtastic!",
-    ]
+    ],
 )
-def test_handle_text_messages_for_breed_message(
-    monkeypatch: pytest.MonkeyPatch, msg: str
-):
+async def test_handle_text_messages_for_breed_message(monkeypatch: pytest.MonkeyPatch, msg: str):
     """
     Unit test to verify that, in the presence of a breed name within a
     message, the bot replies with a specific dog picture and a generic caption.
@@ -472,7 +466,7 @@ def test_handle_text_messages_for_breed_message(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -492,9 +486,9 @@ def test_handle_text_messages_for_breed_message(
         "🐕",
         "🐩",
         "🌭",
-    ]
+    ],
 )
-def test_handle_text_messages_for_dog_sticker(
+async def test_handle_text_messages_for_dog_sticker(
     monkeypatch: pytest.MonkeyPatch, dog_emoji: str
 ):
     """
@@ -510,7 +504,7 @@ def test_handle_text_messages_for_dog_sticker(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_stickers(update, context)
+    await bot.handle_stickers(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -531,10 +525,10 @@ def test_handle_text_messages_for_dog_sticker(
         "foxes are the best",
         "i saw a fennec the other day",
         "do you have a fox?",
-        "mira un zorro!"
-    ]
+        "mira un zorro!",
+    ],
 )
-def test_handle_text_messages_for_fox_reference(
+async def test_handle_text_messages_for_fox_reference(
     monkeypatch: pytest.MonkeyPatch, fox_message: str
 ):
     """
@@ -551,7 +545,7 @@ def test_handle_text_messages_for_fox_reference(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -573,9 +567,9 @@ def test_handle_text_messages_for_fox_reference(
         "is that a wolf?",
         "¡mira un lobo!",
         "howl howl howl!",
-    ]
+    ],
 )
-def test_handle_text_messages_for_wolf_reference(
+async def test_handle_text_messages_for_wolf_reference(
     monkeypatch: pytest.MonkeyPatch, wolf_message: str
 ):
     """
@@ -592,7 +586,7 @@ def test_handle_text_messages_for_wolf_reference(
     # context is empty of sent photos
     assert len(context.bot.photos) == 0
 
-    bot.handle_text_messages(update, context)
+    await bot.handle_text_messages(update, context)
 
     # one picture sent through context
     assert len(context.bot.photos) == 1
@@ -605,9 +599,7 @@ def test_handle_text_messages_for_wolf_reference(
     assert caption == "Howl!"
 
 
-def test_bot_fails_without_telegram_bot_token_in_environment(
-    monkeypatch: pytest.MonkeyPatch
-):
+async def test_bot_fails_without_telegram_bot_token_in_environment(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that the bot properly raises an exception if
     it's initialized in an environment that doesn't have a proper
@@ -619,9 +611,7 @@ def test_bot_fails_without_telegram_bot_token_in_environment(
         DogPicsBot()
 
 
-def test_run_bot(
-    monkeypatch: pytest.MonkeyPatch
-):
+async def test_run_bot(monkeypatch: pytest.MonkeyPatch):
     """
     Unit test to verify that all expected bot handlers are initialized
     properly when calling the `run_bot` method.
@@ -630,7 +620,7 @@ def test_run_bot(
     # instantiating mock bot
     bot = get_mock_bot(monkeypatch)
 
-    assert len(bot.dispatcher.handler_names) == 0
+    assert len(bot.application.handler_names) == 0
     bot.run_bot()
 
     # ? we're actually only checking that we got the right amount
@@ -639,16 +629,16 @@ def test_run_bot(
     # ? information with either some introspection or attribute checks,
     # ? but it might not be needed for now
 
-    assert len(bot.dispatcher.handler_names) == 5
-    assert bot.dispatcher.handler_names == [
+    assert len(bot.application.handler_names) == 5
+    assert bot.application.handler_names == [
         # /start
-        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._commandhandler.CommandHandler'>",
         # /help
-        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._commandhandler.CommandHandler'>",
         # /dog
-        "<class 'telegram.ext.commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._commandhandler.CommandHandler'>",
         # text messages
-        "<class 'telegram.ext.messagehandler.MessageHandler'>",
+        "<class 'telegram.ext._messagehandler.MessageHandler'>",
         # stickers
-        "<class 'telegram.ext.messagehandler.MessageHandler'>",
+        "<class 'telegram.ext._messagehandler.MessageHandler'>",
     ]

@@ -16,7 +16,7 @@ from typing import List
 
 import requests
 from dotenv import load_dotenv
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.DEBUG
@@ -192,9 +192,8 @@ class DogPicsBot:
         # Fetches list of dog breeds from the Dogs API
         self.fetch_breeds()
 
-        # Instantiates the bot updater and dispatcher
-        self.updater = Updater(self.token, use_context=True)
-        self.dispatcher = self.updater.dispatcher
+        # Instantiates the bot application
+        self.application = Application.builder().token(self.token).build()
 
     def fetch_breeds(self):
         """
@@ -214,26 +213,26 @@ class DogPicsBot:
         # Declares and adds handlers for commands that shows help info
         start_handler = CommandHandler("start", self.show_help)
         help_handler = CommandHandler("help", self.show_help)
-        self.dispatcher.add_handler(start_handler)
-        self.dispatcher.add_handler(help_handler)
+        self.application.add_handler(start_handler)
+        self.application.add_handler(help_handler)
 
         # Declares and adds a handler to send a dog picture on demand
         dog_handler = CommandHandler("dog", self.send_dog_picture)
-        self.dispatcher.add_handler(dog_handler)
+        self.application.add_handler(dog_handler)
 
         # Declares and adds a handler for text messages that will reply with
         # a dog pic if either the message comes from a personal chat
         # or includes a trigger word
-        text_handler = MessageHandler(Filters.text, self.handle_text_messages)
-        self.dispatcher.add_handler(text_handler)
+        text_handler = MessageHandler(filters.TEXT, self.handle_text_messages)
+        self.application.add_handler(text_handler)
 
         # Declares and adds a handler for stickers that will reply with
         # a dog pic if the sticker is dog-related
-        sticker_handler = MessageHandler(Filters.sticker, self.handle_stickers)
-        self.dispatcher.add_handler(sticker_handler)
+        sticker_handler = MessageHandler(filters.Sticker.ALL, self.handle_stickers)
+        self.application.add_handler(sticker_handler)
 
         # Fires up the polling thread. We're live!
-        self.updater.start_polling()
+        self.application.run_polling()
 
     def get_random_dog_sound(self):
         """
@@ -256,7 +255,7 @@ class DogPicsBot:
 
         return random.choice(WOLF_PICTURES)
 
-    def show_help(self, update, context):
+    async def show_help(self, update, context):
         """
         Sends the user a brief message explaining how to use the bot.
         """
@@ -268,7 +267,7 @@ class DogPicsBot:
         )
         context.bot.send_message(chat_id=update.message.chat_id, text=help_msg)
 
-    def handle_text_messages(self, update, context):
+    async def handle_text_messages(self, update, context):
         """
         Checks if a message comes from a group. If that is not the case,
         or if the message includes a trigger word, replies with a dog picture.
@@ -312,11 +311,11 @@ class DogPicsBot:
             self.send_wolf_picture(update, context)
         elif is_sad_message:
             sad_caption = "Don't be sad, have a cute dog!"
-            self.send_dog_picture(update, context, mentioned_breed, sad_caption)
+            await self.send_dog_picture(update, context, mentioned_breed, sad_caption)
         elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
-            self.send_dog_picture(update, context, mentioned_breed)
+            await self.send_dog_picture(update, context, mentioned_breed)
 
-    def handle_stickers(self, update, context):
+    async def handle_stickers(self, update, context):
         """
         Checks if a given sticker is dog-related, and replies with a dog
         picture if that's the case.
@@ -329,9 +328,9 @@ class DogPicsBot:
         )
 
         if has_dog_sticker:
-            self.send_dog_picture(update, context)
+            await self.send_dog_picture(update, context)
 
-    def send_dog_picture(self, update, context, breed=None, caption=None):
+    async def send_dog_picture(self, update, context, breed=None, caption=None):
         """
         Retrieves a random dog pic URL from the Dog API and sends the
         given dog picture as a photo message on Telegram.
