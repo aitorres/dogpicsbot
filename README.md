@@ -8,25 +8,17 @@ Currently on [v1.6.3](https://github.com/aitorres/dogpicsbot/releases/tag/v1.6.3
 
 ## Requirements
 
-The bot runs on **Python 3** (officially supporting Python 3.8 to 3.11), and depends on packages listed on the `requirements.txt` file.
+The bot runs on **Python 3** (officially supporting Python 3.9 to 3.12), and depends on packages listed on the `requirements.txt` file.
 
-For ease of use, you should create a Python 3 virtual environment and then use `pip` in order to install the requirements, with the following command:
-
-```bash
-pip install -r requirements.txt
-```
-
-If you're more onto using `conda`, the following command will create an environment, activate it and install the requirements:
+For ease of use, use [`poetry`](https://python-poetry.org/) to install dependencies with the following command:
 
 ```bash
-conda create -n dogpicsbot python=3.7
-conda activate dogpicsbot
-pip install -r requirements.txt
+poetry install
 ```
 
 ## Installation
 
-Simply clone this repository, fetch the requirements on a virtual environment as stated above and then set a new environment variable named `DPB_TG_TOKEN` with your Telegram bot API token. If you don't have a valid token, [check this out](https://core.telegram.org/bots).
+Simply clone this repository, install the requirements with `poetry` then set a new environment variable named `DPB_TG_TOKEN` with your Telegram bot API token. If you don't have a valid token, [check out this guide](https://core.telegram.org/bots).
 
 Note that one feature (sending dog pictures freely through group chats on certain trigger words) requires the bot's Privacy Mode to be **disabled** (this can be done through @BotFather).
 
@@ -35,7 +27,7 @@ Note that one feature (sending dog pictures freely through group chats on certai
 Run the following command on a command line. It will keep the polling thread running (therefore keeping your bot alive) until you kill the process.
 
 ```bash
-python bot.py
+poetry run python bot.py
 ```
 
 ## Test
@@ -43,7 +35,7 @@ python bot.py
 Unit tests for the bot are found in the [tests.py](tests.py) file. You can run them with verbose output after setting up your local environment, including the 80% coverage check that is expected of the repository, with the following command:
 
 ```bash
-pytest
+poetry run pytest
 ```
 
 ## What's next
@@ -53,7 +45,6 @@ The next features to be developed are:
 - Let the dog detect and reply to images that contain dogs in them ([reference](https://towardsdatascience.com/a-dog-detector-and-breed-classifier-4feb99e1f852))
 - Replying "intelligently" to messages relating to dogs (e.g. emotions)
 - Explore the use of other dog pics APIs
-- Drop support for Python 3.7 and add support for Python 3.10
 - And more!
 
 ## Contributing

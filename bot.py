@@ -15,12 +15,11 @@ import random
 from typing import List
 
 import requests
+from dotenv import load_dotenv
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
-
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.DEBUG
 )
 
 
@@ -55,12 +54,8 @@ FOX_SOUNDS: List[str] = [
 ]
 
 
-DOGS_API_DOG_PICTURE_URL: str = (
-    "https://dog.ceo/api/breeds/image/random"
-)
-DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: str = (
-    "https://dog.ceo/api/breed/{0}/images/random"
-)
+DOGS_API_DOG_PICTURE_URL: str = "https://dog.ceo/api/breeds/image/random"
+DOGS_API_SPECIFIC_BREED_DOG_PICTURE_URL: str = "https://dog.ceo/api/breed/{0}/images/random"
 DOGS_API_BREED_LIST_URL: str = "https://dog.ceo/api/breeds/list/all"
 
 RANDOMFOX_API_URL: str = "https://randomfox.ca/floof/"
@@ -80,19 +75,39 @@ WOLF_PICTURES: List[str] = [
 ]
 
 
+def get_mentioned_breed(breeds, words):
+    """
+    Given a list of breeds and a list of words,
+    checks if any breed appears within the list of words
+    and returns the first successful case if so
+    """
+
+    for breed in breeds:
+        # the breed might be directly mentioned
+        # or it can be a substring (like)
+        for word in words:
+            if breed in word:
+                return breed
+
+    return None
+
+
 class DogPicsBot:
     """
     A class to encapsulate all relevant methods of the Dog Pics
     Telegram bot.
     """
 
-    REQUESTS_TIMEOUT = 10 # in seconds
+    REQUESTS_TIMEOUT = 10  # in seconds
 
     def __init__(self):
         """
         Constructor of the class. Initializes certain instance variables
         and checks if everything's O.K. for the bot to work as expected.
         """
+
+        # Load environment variables
+        load_dotenv()
 
         self.dog_emojis = [
             "🐶",
@@ -134,7 +149,7 @@ class DogPicsBot:
             "lloro",
             "deprimido",
             "tusa",
-            "despech", # despechado, despechada, despecho
+            "despech",  # despechado, despechada, despecho
         ]
 
         self.sad_triggers = [
@@ -165,7 +180,7 @@ class DogPicsBot:
         ]
 
         # This environment variable should be set before using the bot
-        self.token = os.environ.get("DPB_TG_TOKEN", "")
+        self.token = os.environ.get("DPB_TG_TOKEN")
 
         # Stops runtime if the token has not been set properly
         if not self.token:
@@ -188,7 +203,7 @@ class DogPicsBot:
 
         response = requests.get(url=DOGS_API_BREED_LIST_URL, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
-        self.breeds = list(response_body['message'])
+        self.breeds = list(response_body["message"])
 
     def run_bot(self):
         """
@@ -246,9 +261,11 @@ class DogPicsBot:
         Sends the user a brief message explaining how to use the bot.
         """
 
-        help_msg = f"{self.get_random_dog_sound()} " + \
-                   "If you want a dog picture, send me a message " + \
-                   "or use the /dog command."
+        help_msg = (
+            f"{self.get_random_dog_sound()} "
+            + "If you want a dog picture, send me a message "
+            + "or use the /dog command."
+        )
         context.bot.send_message(chat_id=update.message.chat_id, text=help_msg)
 
     def handle_text_messages(self, update, context):
@@ -260,63 +277,29 @@ class DogPicsBot:
         logging.debug("Received message: %s", update.message.text)
         logging.debug("Splitted words: %s", ", ".join(words))
 
-        def get_mentioned_breed(breeds, words):
-            """
-            Given a list of breeds and a list of words,
-            checks if any breed appears within the list of words
-            and returns the first successful case if so
-            """
-
-            for breed in breeds:
-                # the breed might be directly mentioned
-                if breed in words:
-                    return breed
-
-                # or it can be a substring (like)
-                for word in words:
-                    if breed in word:
-                        return breed
-
-            return None
-
         # Possibility: received message mentions a specific breed
         mentioned_breed = get_mentioned_breed(self.breeds, words)
         mentions_a_breed = mentioned_breed is not None
 
         # Easter Egg Possibility: has a fox emoji or word
         has_fox_reference = any(
-            any(
-                word.startswith(fox_trigger)
-                for word in words
-            )
-            for fox_trigger in self.fox_triggers
+            any(word.startswith(fox_trigger) for word in words) for fox_trigger in self.fox_triggers
         )
 
         # Easter Egg Possibility: has a wolf emoji or word
         has_wolf_reference = any(
-            any(
-                word.startswith(wolf_trigger)
-                for word in words
-            )
+            any(word.startswith(wolf_trigger) for word in words)
             for wolf_trigger in self.wolf_triggers
         )
 
         # Possibility: received a sad message
         is_sad_message = any(
-            any(
-                word.startswith(sad_trigger)
-                for word in words
-            )
-            for sad_trigger in self.sad_triggers
+            any(word.startswith(sad_trigger) for word in words) for sad_trigger in self.sad_triggers
         )
 
         # Possibility: received message mentions dogs
         should_trigger_picture = any(
-            any(
-                word.startswith(dog_trigger)
-                for word in words
-            )
-            for dog_trigger in self.dog_triggers
+            any(word.startswith(dog_trigger) for word in words) for dog_trigger in self.dog_triggers
         )
 
         # Possibility: it's a personal chat message
@@ -329,9 +312,7 @@ class DogPicsBot:
             self.send_wolf_picture(update, context)
         elif is_sad_message:
             sad_caption = "Don't be sad, have a cute dog!"
-            self.send_dog_picture(
-                update, context, mentioned_breed, sad_caption
-            )
+            self.send_dog_picture(update, context, mentioned_breed, sad_caption)
         elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
             self.send_dog_picture(update, context, mentioned_breed)
 
@@ -342,9 +323,7 @@ class DogPicsBot:
         """
 
         has_sticker = update.message.sticker is not None
-        has_emoji_sticker = (
-            has_sticker and update.message.sticker.emoji is not None
-        )
+        has_emoji_sticker = has_sticker and update.message.sticker.emoji is not None
         has_dog_sticker = has_emoji_sticker and any(
             e in update.message.sticker.emoji for e in self.dog_emojis
         )
@@ -367,14 +346,12 @@ class DogPicsBot:
         # Fetches a dog picture URL from the Dog API
         response = requests.get(url=url, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
-        image_url = response_body['message']
+        image_url = response_body["message"]
 
         if caption is not None:
             self.send_picture(update, context, image_url, caption)
         else:
-            self.send_picture(
-                update, context, image_url, self.get_random_dog_sound()
-            )
+            self.send_picture(update, context, image_url, self.get_random_dog_sound())
 
     def send_fox_picture(self, update, context):
         """
@@ -385,11 +362,9 @@ class DogPicsBot:
         # Fetches a dog picture URL from the Dog API
         response = requests.get(url=RANDOMFOX_API_URL, timeout=self.REQUESTS_TIMEOUT)
         response_body = response.json()
-        image_url = response_body['image']
+        image_url = response_body["image"]
 
-        self.send_picture(
-            update, context, image_url, self.get_random_fox_sound()
-        )
+        self.send_picture(update, context, image_url, self.get_random_fox_sound())
 
     def send_wolf_picture(self, update, context):
         """
@@ -399,9 +374,7 @@ class DogPicsBot:
 
         image_url = self.get_random_wolf_picture()
 
-        self.send_picture(
-            update, context, image_url, "Howl!"
-        )
+        self.send_picture(update, context, image_url, "Howl!")
 
     def send_picture(self, update, context, image_url, caption):
         """
@@ -413,11 +386,11 @@ class DogPicsBot:
             chat_id=update.message.chat_id,
             reply_to_message_id=update.message.message_id,
             photo=image_url,
-            caption=caption
+            caption=caption,
         )
 
 
 # If the script is run directly, fires the main procedure
-if __name__ == "__main__": # pragma: no cover
+if __name__ == "__main__":
     bot = DogPicsBot()
     bot.run_bot()
