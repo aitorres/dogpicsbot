@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2023-11-05
+
+### Added
+
+- Add support for Python 3.12
+- Environment variables can now be managed via `.env` files using `dotenv`
+- Improve developer experience with `pre-commit`, `isort`, and other linting hooks
+- Add auto-release action on CI/CD
+
+### Changed
+
+- Project dependencies are now managed with `poetry`
+- Dropped official support for Python 3.8
+- Minor refactors and style changes
+
 ## [1.6.3] - 2022-02-14
 
 ### Changed
