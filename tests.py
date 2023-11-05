@@ -126,7 +126,7 @@ class MockContextBot:
     # tuple of (intended_chat_id, intented_reply_to_message_id, photo, caption)
     photos: List[Tuple[int, int, str, str]] = field(default_factory=list)
 
-    def send_message(self, chat_id, text):
+    async def send_message(self, chat_id, text):
         """
         Pretends that a message is sent, instead stores it on an instance
         level for further checks on tests.
@@ -134,7 +134,7 @@ class MockContextBot:
 
         self.messages.append((chat_id, text))
 
-    def send_photo(self, chat_id, reply_to_message_id, photo, caption):
+    async def send_photo(self, chat_id, reply_to_message_id, photo, caption):
         """
         Pretends that a message with a photo is sent, instead stores it
         on an instance level for further checks on tests.

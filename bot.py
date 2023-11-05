@@ -265,7 +265,7 @@ class DogPicsBot:
             + "If you want a dog picture, send me a message "
             + "or use the /dog command."
         )
-        context.bot.send_message(chat_id=update.message.chat_id, text=help_msg)
+        await context.bot.send_message(chat_id=update.message.chat_id, text=help_msg)
 
     async def handle_text_messages(self, update, context):
         """
@@ -306,9 +306,9 @@ class DogPicsBot:
         is_personal_chat = chat_type not in TELEGRAM_GROUP_CHAT_TYPES
 
         if has_fox_reference:
-            self.send_fox_picture(update, context)
+            await self.send_fox_picture(update, context)
         elif has_wolf_reference:
-            self.send_wolf_picture(update, context)
+            await self.send_wolf_picture(update, context)
         elif is_sad_message:
             sad_caption = "Don't be sad, have a cute dog!"
             await self.send_dog_picture(update, context, mentioned_breed, sad_caption)
@@ -347,12 +347,12 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body["message"]
 
-        if caption is not None:
-            self.send_picture(update, context, image_url, caption)
-        else:
-            self.send_picture(update, context, image_url, self.get_random_dog_sound())
+        if caption is None:
+            caption = self.get_random_dog_sound()
 
-    def send_fox_picture(self, update, context):
+        await self.send_picture(update, context, image_url, caption)
+
+    async def send_fox_picture(self, update, context):
         """
         Retrieves a random fox pic URL from the Fox API and sends the
         given fox picture as a photo message on Telegram.
@@ -363,9 +363,9 @@ class DogPicsBot:
         response_body = response.json()
         image_url = response_body["image"]
 
-        self.send_picture(update, context, image_url, self.get_random_fox_sound())
+        await self.send_picture(update, context, image_url, self.get_random_fox_sound())
 
-    def send_wolf_picture(self, update, context):
+    async def send_wolf_picture(self, update, context):
         """
         Retrieves a random wolf pic URL from the static list and sends the
         given wolf picture as a photo message on Telegram.
@@ -373,15 +373,16 @@ class DogPicsBot:
 
         image_url = self.get_random_wolf_picture()
 
-        self.send_picture(update, context, image_url, "Howl!")
+        await self.send_picture(update, context, image_url, "Howl!")
 
-    def send_picture(self, update, context, image_url, caption):
+    async def send_picture(self, update, context, image_url, caption):
         """
         Retrieves a pic URL from the provided API and sends the
         given picture as a photo reply message on Telegram.
         """
+
         # Sends the picture
-        context.bot.send_photo(
+        await context.bot.send_photo(
             chat_id=update.message.chat_id,
             reply_to_message_id=update.message.message_id,
             photo=image_url,
