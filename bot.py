@@ -161,11 +161,10 @@ class DogPicsBot:
             "😫",
             "💔",
             "sad",
-            "not good",
+            "bad",
             "unhappy",
             "depressed",
             "miserable",
-            "down",
             "downhearted",
         ] + self.sad_spanish_triggers
 
