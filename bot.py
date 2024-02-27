@@ -272,8 +272,6 @@ class DogPicsBot:
         or if the message includes a trigger word, replies with a dog picture.
         """
         words = set(update.message.text.lower().split())
-        logging.debug("Received message: %s", update.message.text)
-        logging.debug("Splitted words: %s", ", ".join(words))
 
         # Possibility: received message mentions a specific breed
         mentioned_breed = get_mentioned_breed(self.breeds, words)
