@@ -632,13 +632,13 @@ async def test_run_bot(monkeypatch: pytest.MonkeyPatch):
     assert len(bot.application.handler_names) == 5
     assert bot.application.handler_names == [
         # /start
-        "<class 'telegram.ext._commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._handlers.commandhandler.CommandHandler'>",
         # /help
-        "<class 'telegram.ext._commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._handlers.commandhandler.CommandHandler'>",
         # /dog
-        "<class 'telegram.ext._commandhandler.CommandHandler'>",
+        "<class 'telegram.ext._handlers.commandhandler.CommandHandler'>",
         # text messages
-        "<class 'telegram.ext._messagehandler.MessageHandler'>",
+        "<class 'telegram.ext._handlers.messagehandler.MessageHandler'>",
         # stickers
-        "<class 'telegram.ext._messagehandler.MessageHandler'>",
+        "<class 'telegram.ext._handlers.messagehandler.MessageHandler'>",
     ]
