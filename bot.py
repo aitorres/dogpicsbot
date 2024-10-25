@@ -6,7 +6,7 @@ a random dog picture.
 
 Every picture is fetched through the Dog API (https://dog.ceo/dog-api/).
 
-@author Andrés Ignacio Torres <andresitorresm@gmail.com>
+@author Andrés Ignacio Torres <dev@aitorres.com>
 """
 
 import logging
