@@ -1,7 +1,7 @@
 """
 Unit tests for the functions and classes implemented for the DogPicsBot.
 
-@author Andrés Ignacio Torres <andresitorresm@gmail.com>
+@author Andrés Ignacio Torres <dev@aitorres.com>
 """
 
 from dataclasses import dataclass, field
