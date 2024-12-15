@@ -4,7 +4,7 @@ A simple Telegram bot that sends random dog pictures (and more!).
 
 You can test the bot on Telegram, just click here: [@DogPicsBot](https://t.me/dogpicsbot).
 
-Currently on [v3.1.0](https://github.com/aitorres/dogpicsbot/releases/tag/v3.1.0). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
+Currently on [v3.1.1](https://github.com/aitorres/dogpicsbot/releases/tag/v3.1.1). For more information about versions and changes, refer to the [changelog](CHANGELOG.md).
 
 ## Requirements
 
@@ -19,6 +19,8 @@ poetry install
 ## Installation
 
 Simply clone this repository, install the requirements with `poetry` then set a new environment variable named `DPB_TG_TOKEN` with your Telegram bot API token. If you don't have a valid token, [check out this guide](https://core.telegram.org/bots).
+
+You can also optionally set a new environment variable named `DPB_SAD_MESSAGE_RESPONSE_PROBABILITY` with a float value between 0 and 1, to potentially limit how often the bot will respond with dog pictures to sad messages.
 
 Note that one feature (sending dog pictures freely through group chats on certain trigger words) requires the bot's Privacy Mode to be **disabled** (this can be done through @BotFather).
 

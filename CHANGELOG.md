@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.1] - 2024-12-14
+
+### Changed
+
+- Sad message response probability can be read from the environment (.env file)
+- Default value of sad message response probability is 1.0 to match the usual behavior (<v3.1.0)
+
 ## [3.1.0] - 2024-12-14
 
-## Added
+### Added
 
 - A new variable is added to the main bot class to account for a "sad message probability", to potentially limit the amount of sad message responses
 
-## Changed
+### Changed
 
 - Added support for Python 3.13 on tests
 - Updated Github Actions checks
@@ -19,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2024-08-01
 
-## Changed
+### Changed
 
 - Dropped support for Python 3.9
 - Removed certain logging statements to reduce unneeded logged information

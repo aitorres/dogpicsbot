@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dogpicsbot"
-version = "3.1.0"
+version = "3.1.1"
 description = "A simple Telegram bot that sends random dog pictures (and more!)."
 authors = ["Andrés Ignacio Torres <dev@aitorres.com>"]
 
