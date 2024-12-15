@@ -188,8 +188,12 @@ class DogPicsBot:
                 "You might need to specify one or more environment variables."
             )
 
-        # Probability to avoid overcrowding Telegram chats with dog pictures
-        self.sad_message_response_probability: float = 0.45
+        # Probability to avoid overcrowding Telegram chats with dog pictures, read from
+        # the environment variable DPB_SAD_MESSAGE_RESPONSE_PROBABILITY. If not set, the
+        # default value is 1.0 (always send a dog picture).
+        self.sad_message_response_probability: float = float(
+            os.environ.get("DPB_SAD_MESSAGE_RESPONSE_PROBABILITY", 1.0)
+        )
 
         # Fetches list of dog breeds from the Dogs API
         self.fetch_breeds()
