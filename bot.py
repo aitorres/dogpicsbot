@@ -188,6 +188,9 @@ class DogPicsBot:
                 "You might need to specify one or more environment variables."
             )
 
+        # Probability to avoid overcrowding Telegram chats with dog pictures
+        self.sad_message_response_probability: float = 0.45
+
         # Fetches list of dog breeds from the Dogs API
         self.fetch_breeds()
 
@@ -307,8 +310,14 @@ class DogPicsBot:
         elif has_wolf_reference:
             await self.send_wolf_picture(update, context)
         elif is_sad_message:
-            sad_caption = "Don't be sad, have a cute dog!"
-            await self.send_dog_picture(update, context, mentioned_breed, sad_caption)
+            # Easter Egg: if the message is sad, send a dog picture
+            # with a comforting message
+
+            # To avoid overloading the chat with dog pictures, only
+            # send a picture with a certain probability
+            if random.random() < self.sad_message_response_probability:
+                sad_caption = "Don't be sad, have a cute dog!"
+                await self.send_dog_picture(update, context, mentioned_breed, sad_caption)
         elif any([should_trigger_picture, is_personal_chat, mentions_a_breed]):
             await self.send_dog_picture(update, context, mentioned_breed)
 

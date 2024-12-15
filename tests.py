@@ -423,25 +423,34 @@ async def test_handle_text_messages_for_sad_message(
     message, the bot replies with a dog picture and a particular caption.
     """
 
-    # instantiating mock bot
-    bot = get_mock_bot(monkeypatch)
-    update = get_mock_update(message=sad_message)
-    context = get_mock_context()
+    for probability in [0.0, 1.0]:
+        # we're either testing with a 100% probability or a 0% probability
+        # so we can assert the outcome of the test
+        should_send: bool = probability == 1.0
 
-    # context is empty of sent photos
-    assert len(context.bot.photos) == 0
+        # instantiating mock bot
+        bot = get_mock_bot(monkeypatch)
+        bot.sad_message_response_probability = probability
+        update = get_mock_update(message=sad_message)
+        context = get_mock_context()
 
-    await bot.handle_text_messages(update, context)
+        # context is empty of sent photos
+        assert len(context.bot.photos) == 0
 
-    # one picture sent through context
-    assert len(context.bot.photos) == 1
+        await bot.handle_text_messages(update, context)
 
-    # contains the chat_id, original message id, photo url and caption
-    chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
-    assert chat_id == update.message.chat_id
-    assert reply_to_message_id == update.message.message_id
-    assert photo_url == "https://dog.pics/dog.png"
-    assert caption == "Don't be sad, have a cute dog!"
+        if should_send:
+            # one picture sent through context
+            assert len(context.bot.photos) == 1
+
+            # contains the chat_id, original message id, photo url and caption
+            chat_id, reply_to_message_id, photo_url, caption = context.bot.photos[0]
+            assert chat_id == update.message.chat_id
+            assert reply_to_message_id == update.message.message_id
+            assert photo_url == "https://dog.pics/dog.png"
+            assert caption == "Don't be sad, have a cute dog!"
+        else:
+            assert len(context.bot.photos) == 0
 
 
 @pytest.mark.parametrize(
