@@ -7,18 +7,18 @@ authors = ["Andrés Ignacio Torres <dev@aitorres.com>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 python-dotenv = "^1.0.1"
-python-telegram-bot = "^21.5"
+python-telegram-bot = "^21.9"
 requests = "^2.32.3"
 
 [tool.poetry.dev-dependencies]
-ipython = "^8.27.0"
+ipython = "^8.30.0"
 flake8 = "^7.1.1"
-black = "^24.8.0"
-pre-commit = "^3.8.0"
+black = "^24.10.0"
+pre-commit = "^4.0.1"
 isort = "^5.13.2"
-pylint = "^3.2.7"
-pytest = "^8.3.2"
-pytest-cov = "^5.0.0"
+pylint = "^3.3.2"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
 pytest-trio = "^0.8.0"
 pytest-tornasync = "^0.6.0.post2"
 
