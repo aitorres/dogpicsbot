@@ -1,6 +1,8 @@
 on:
   [push, pull_request]
 
+name: Test
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,9 +12,9 @@ jobs:
     name: Run tests in Python ${{ matrix.python-version }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
