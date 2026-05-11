@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-05-11
+
+### Added
+
+- A Dockerfile is now included in the repository for container-based deployments.
+
+### Changed
+
+- Official support for Python 3.14
+  - Validate support for Python 3.14 on Github Actions checks
+- General dependency updates
+- Update Github Actions checks to latest versions
+- Update `poetry` setup to modern standards
+
 ## [3.1.1] - 2024-12-14
 
 ### Changed
