@@ -8,7 +8,7 @@ Currently on [v3.2.1](https://github.com/aitorres/dogpicsbot/releases/tag/v3.2.1
 
 ## Requirements
 
-The bot runs on **Python 3** (officially supporting Python 3.10 to 3.14), and depends on packages listed on the `requirements.txt` file.
+The bot runs on **Python 3** (officially supporting Python 3.11 to 3.15), and depends on packages listed on the `requirements.txt` file.
 
 For ease of use, use [`poetry`](https://python-poetry.org/) to install dependencies with the following command:
 
